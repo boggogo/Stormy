@@ -15,6 +15,15 @@ public class CurrentWeather {
     private double mPrecipChange;
     private String mSummery;
     private String mTimeZone;
+    private double mWindSpeed;
+
+    public double getWindSpeed() {
+        return mWindSpeed;
+    }
+
+    public void setWindSpeed(double windSpeed) {
+        mWindSpeed = windSpeed;
+    }
 
     public String getTimeZone() {
         return mTimeZone;
@@ -84,8 +93,8 @@ public class CurrentWeather {
         mTime = time;
     }
 
-    public double getTemperature() {
-        return mTemperature;
+    public int getTemperature() {
+        return (int)Math.round(mTemperature);
     }
 
     public void setTemperature(double temperature) {
@@ -100,8 +109,10 @@ public class CurrentWeather {
         mHumidity = humidity;
     }
 
-    public double getPrecipChange() {
-        return mPrecipChange;
+    public int getPrecipChange() {
+        double precPercentage = mPrecipChange * 100;
+
+        return (int)Math.round(precPercentage);
     }
 
     public void setPrecipChange(double precipChange) {
