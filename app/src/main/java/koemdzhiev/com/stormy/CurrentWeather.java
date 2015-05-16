@@ -101,8 +101,8 @@ public class CurrentWeather {
         mTemperature = temperature;
     }
 
-    public double getHumidity() {
-        return mHumidity;
+    public int getHumidity() {
+        return (int) (mHumidity * 100);
     }
 
     public void setHumidity(double humidity) {

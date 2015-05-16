@@ -33,6 +33,7 @@ import butterknife.InjectView;
 public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
     private CurrentWeather mCurrentWeather;
+
     @InjectView(R.id.timeLabel) TextView mTimeLabel;
     @InjectView(R.id.temperatureLabel) TextView mTemperatureLabel;
     @InjectView(R.id.humidityValue) TextView mHumidityValue;
@@ -44,6 +45,7 @@ public class MainActivity extends Activity {
     @InjectView(R.id.refreshImageView) ImageView mRefreshImaveView;
     @InjectView(R.id.progressBar) ProgressBar mProgressBar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +54,8 @@ public class MainActivity extends Activity {
         ButterKnife.inject(this);
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        final double latitude = 57.1569;
-        final double longitude = -2.1115;
+        final double latitude = 57.149717;
+        final double longitude = -2.094278;
 
         mRefreshImaveView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,7 +159,7 @@ public class MainActivity extends Activity {
     private void updateDisplay() {
         mTemperatureLabel.setText(mCurrentWeather.getTemperature()+"");
         mTimeLabel.setText("At "+mCurrentWeather.getFormattedTime()+" it will be");
-        mHumidityValue.setText(mCurrentWeather.getHumidity() +"");
+        mHumidityValue.setText(mCurrentWeather.getHumidity() +"%");
         mPrecipValue.setText(mCurrentWeather.getPrecipChange()+"%");
         mSummaryLabel.setText(mCurrentWeather.getSummery());
         mWindSpeedValue.setText(mCurrentWeather.getWindSpeed()+"");
