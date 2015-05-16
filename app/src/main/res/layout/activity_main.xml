@@ -176,15 +176,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/refreshImageView"
-        android:layout_alignParentTop="true"
+        android:src="@mipmap/refresh"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:src="@mipmap/refresh"/>
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"/>
 
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_alignBottom="@+id/refreshImageView"/>
 </RelativeLayout>
