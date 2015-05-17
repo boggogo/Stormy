@@ -96,7 +96,11 @@ public class MyLocation {
         }
     }
     public void cancelTimer() {
-        timer1.cancel();
+        if(timer1 == null){
+            //if timer is null - the app crashes
+        }else {
+            timer1.cancel();
+        }
         lm.removeUpdates(locationListenerGps);
         lm.removeUpdates(locationListenerNetwork);
     }
