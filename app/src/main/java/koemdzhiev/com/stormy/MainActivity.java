@@ -3,6 +3,8 @@ package koemdzhiev.com.stormy;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -26,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -183,6 +187,7 @@ public class MainActivity extends Activity {
         mSummaryLabel.setText(mCurrentWeather.getSummery());
         mWindSpeedValue.setText(mCurrentWeather.getWindSpeed()+"");
         mLocationLabel.setText(mCurrentWeather.getTimeZone());
+        getLocationName();
         Drawable drawable = ContextCompat.getDrawable(this, mCurrentWeather.getIconId());
         mIconImageView.setImageDrawable(drawable);
 
@@ -207,7 +212,7 @@ public class MainActivity extends Activity {
         currentWeather.setTimeZone(timezone);
         currentWeather.setWindSpeed(currently.getDouble("windSpeed"));
 
-        Log.d(TAG,currentWeather.getFormattedTime());
+        Log.d(TAG, currentWeather.getFormattedTime());
         return currentWeather;
     }
 
@@ -226,6 +231,23 @@ public class MainActivity extends Activity {
     private void alertUserAboutError() {
         AlertDIalogFragment dialog = new AlertDIalogFragment();
         dialog.show(getFragmentManager(),getString(R.string.error_dialog_text));
+    }
+
+    private void getLocationName(){
+        Geocoder geo = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addressList = geo.getFromLocation(this.latitude,this.longitude,1);
+            if (addressList.isEmpty()){
+                //gets the default name from the timeZone
+            }else{
+                if(addressList.size() > 0){
+                    Log.v(MainActivity.class.getSimpleName(),addressList.get(0).getLocality() + ", "+ addressList.get(0).getCountryName()+"");
+                    mLocationLabel.setText(addressList.get(0).getLocality() + ", "+ addressList.get(0).getCountryName());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

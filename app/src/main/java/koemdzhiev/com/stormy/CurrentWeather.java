@@ -16,6 +16,15 @@ public class CurrentWeather {
     private String mSummery;
     private String mTimeZone;
     private double mWindSpeed;
+    private String locationName;
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
 
     public double getWindSpeed() {
         return mWindSpeed;

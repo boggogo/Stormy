@@ -44,20 +44,23 @@
         android:layout_height="wrap_content"
         android:text="Aberdeen, UK"
         android:id="@+id/locationLabel"
-        android:layout_above="@+id/timeLabel"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60sp"
         android:textColor="@android:color/white"
-        android:textSize="24sp"/>
+        android:textSize="24sp"
+        android:layout_marginBottom="58dp"
+        android:layout_above="@+id/timeLabel"
+        android:layout_alignLeft="@+id/summaryLabel"
+        android:layout_alignStart="@+id/summaryLabel"/>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/iconImageView"
-        android:layout_alignBottom="@+id/locationLabel"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:src="@mipmap/clear_night"/>
+        android:src="@mipmap/clear_night"
+        android:layout_alignBottom="@+id/locationLabel"
+        android:layout_toLeftOf="@+id/locationLabel"
+        android:layout_toStartOf="@+id/locationLabel"/>
 
     <LinearLayout
         android:orientation="horizontal"
