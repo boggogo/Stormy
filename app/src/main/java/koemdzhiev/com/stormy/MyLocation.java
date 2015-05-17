@@ -1,5 +1,4 @@
 package koemdzhiev.com.stormy;
-
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -9,9 +8,6 @@ import android.os.Bundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by koemdzhiev on 17/05/2015.
- */
 public class MyLocation {
     Timer timer1;
     LocationManager lm;
@@ -99,7 +95,11 @@ public class MyLocation {
             locationResult.gotLocation(null);
         }
     }
-
+    public void cancelTimer() {
+        timer1.cancel();
+        lm.removeUpdates(locationListenerGps);
+        lm.removeUpdates(locationListenerNetwork);
+    }
     public static abstract class LocationResult{
         public abstract void gotLocation(Location location);
     }

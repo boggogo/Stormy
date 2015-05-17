@@ -96,6 +96,7 @@ public class MainActivity extends Activity {
         };
         MyLocation myLocation = new MyLocation();
         myLocation.getLocation(this, locationResult);
+        myLocation.cancelTimer();
     }
 
     private void getForecast(double latitude, double longitude) {
