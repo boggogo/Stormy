@@ -3,6 +3,7 @@ package koemdzhiev.com.stormy;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -33,6 +34,8 @@ import butterknife.InjectView;
 public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
     private CurrentWeather mCurrentWeather;
+    private double latitude = 57.149717;
+    private double longitude = -2.094278;
 
     @InjectView(R.id.timeLabel) TextView mTimeLabel;
     @InjectView(R.id.temperatureLabel) TextView mTemperatureLabel;
@@ -54,12 +57,13 @@ public class MainActivity extends Activity {
         ButterKnife.inject(this);
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        final double latitude = 57.149717;
-        final double longitude = -2.094278;
+        getCurrentLocation();
+
 
         mRefreshImaveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getCurrentLocation();
                 getForecast(latitude,longitude);
             }
         });
@@ -68,6 +72,21 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Main UI code is running!");
 
 
+
+    }
+
+    private void getCurrentLocation() {
+        MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
+            @Override
+            public void gotLocation(Location location){
+                //Got the location!
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                Log.d(MainActivity.class.getSimpleName(), "Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
+            }
+        };
+        MyLocation myLocation = new MyLocation();
+        myLocation.getLocation(this, locationResult);
     }
 
     private void getForecast(double latitude, double longitude) {
