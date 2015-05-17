@@ -61,22 +61,25 @@ public class MainActivity extends Activity {
         ButterKnife.inject(this);
         mProgressBar.setVisibility(View.INVISIBLE);
 
-        getCurrentLocation();
-
-
         mRefreshImaveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getCurrentLocation();
-                getForecast(latitude,longitude);
+                getForecast(latitude, longitude);
             }
         });
-
+        getCurrentLocation();
         getForecast(latitude,longitude);
         Log.d(TAG, "Main UI code is running!");
 
 
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getCurrentLocation();
+        getForecast(latitude,longitude);
     }
 
     private void getCurrentLocation() {

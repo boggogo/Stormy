@@ -42,7 +42,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Aberdeen, UK"
+        android:text="Aberdeen, United Kingdom"
         android:id="@+id/locationLabel"
         android:textColor="@android:color/white"
         android:textSize="24sp"
@@ -55,12 +55,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/iconImageView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:src="@mipmap/clear_night"
         android:layout_alignBottom="@+id/locationLabel"
-        android:layout_toLeftOf="@+id/locationLabel"
-        android:layout_toStartOf="@+id/locationLabel"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
     <LinearLayout
         android:orientation="horizontal"
