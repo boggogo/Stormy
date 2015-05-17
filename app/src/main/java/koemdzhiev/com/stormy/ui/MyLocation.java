@@ -1,4 +1,4 @@
-package koemdzhiev.com.stormy;
+package koemdzhiev.com.stormy.ui;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;

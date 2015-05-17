@@ -1,4 +1,4 @@
-package koemdzhiev.com.stormy;
+package koemdzhiev.com.stormy.ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -33,11 +33,14 @@ import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import koemdzhiev.com.stormy.R;
+import koemdzhiev.com.stormy.weather.Current;
 
 
 public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
-    private CurrentWeather mCurrentWeather;
+    private Current mCurrent;
+    //default coordinates - Aberdeen, UK
     private double latitude = 57.149717;
     private double longitude = -2.094278;
 
@@ -60,7 +63,6 @@ public class MainActivity extends Activity {
         //-----------MY CODE STARTS HERE-----------------
         ButterKnife.inject(this);
         mProgressBar.setVisibility(View.INVISIBLE);
-
         getCurrentLocation();
 
 
@@ -100,6 +102,7 @@ public class MainActivity extends Activity {
     }
 
     private void getForecast(double latitude, double longitude) {
+        //animations
         YoYo.with(Techniques.FadeIn).duration(1800).playOn(mLocationLabel);
         YoYo.with(Techniques.FadeIn).duration(1600).playOn(mTemperatureLabel);
         YoYo.with(Techniques.FadeIn).duration(1800).playOn(mIconImageView);
@@ -110,8 +113,6 @@ public class MainActivity extends Activity {
         YoYo.with(Techniques.FadeIn).duration(1200).playOn(mTimeLabel);
 
         String API_KEY = "3ed3a1906736c6f6c467606bd1f91e2c";
-        //aberdeen, coordinates
-
         String forecast = "https://api.forecast.io/forecast/"+ API_KEY +"/"+ latitude+","+ longitude+"?units=auto";
 
         if(isNetworkAvailable()) {
@@ -148,7 +149,7 @@ public class MainActivity extends Activity {
                         String jsonData = response.body().string();
                         //Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
-                            mCurrentWeather = getCurrentDetails(jsonData);
+                            mCurrent = getCurrentDetails(jsonData);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -184,42 +185,44 @@ public class MainActivity extends Activity {
             mRefreshImaveView.setVisibility(View.VISIBLE);
         }
     }
-
+    //updates the dysplay with the data in the CUrrentWeather locaal object
     private void updateDisplay() {
-        mTemperatureLabel.setText(mCurrentWeather.getTemperature()+"");
-        mTimeLabel.setText("At "+mCurrentWeather.getFormattedTime()+" it will be");
-        mHumidityValue.setText(mCurrentWeather.getHumidity() +"%");
-        mPrecipValue.setText(mCurrentWeather.getPrecipChange()+"%");
-        mSummaryLabel.setText(mCurrentWeather.getSummery());
-        mWindSpeedValue.setText(mCurrentWeather.getWindSpeed()+"");
-        mLocationLabel.setText(mCurrentWeather.getTimeZone());
+        mTemperatureLabel.setText(mCurrent.getTemperature()+"");
+        mTimeLabel.setText("At "+ mCurrent.getFormattedTime()+" it will be");
+        mHumidityValue.setText(mCurrent.getHumidity() +"%");
+        mPrecipValue.setText(mCurrent.getPrecipChange()+"%");
+        mSummaryLabel.setText(mCurrent.getSummery());
+        mWindSpeedValue.setText(mCurrent.getWindSpeed()+"");
+        mLocationLabel.setText(mCurrent.getTimeZone());
         getLocationName();
-        Drawable drawable = ContextCompat.getDrawable(this, mCurrentWeather.getIconId());
+        Drawable drawable = ContextCompat.getDrawable(this, mCurrent.getIconId());
         mIconImageView.setImageDrawable(drawable);
 
 
     }
 
-    //throws JSONException, doing it like that, we place the
-    // responsability of handaling this exeption to the caller of the method
-    private CurrentWeather getCurrentDetails(String jsonData) throws JSONException{
+    /*
+     * throws JSONException, doing it like that, we place the
+     * responsability of handaling this exeption to the caller of the method
+    */
+    private Current getCurrentDetails(String jsonData) throws JSONException{
         JSONObject forecast = new JSONObject(jsonData);
         String timezone = forecast.getString("timezone");
         Log.i(TAG,"From JSON: " + timezone);
 
         JSONObject currently = forecast.getJSONObject("currently");
-        CurrentWeather currentWeather = new CurrentWeather();
-        currentWeather.setHumidity(currently.getDouble("humidity"));
-        currentWeather.setTime(currently.getLong("time"));
-        currentWeather.setIcon(currently.getString("icon"));
-        currentWeather.setPrecipChange(currently.getDouble("precipProbability"));
-        currentWeather.setSummery(currently.getString("summary"));
-        currentWeather.setTemperature(currently.getDouble("temperature"));
-        currentWeather.setTimeZone(timezone);
-        currentWeather.setWindSpeed(currently.getDouble("windSpeed"));
+        Current mCurrent = new Current();
+        mCurrent.setHumidity(currently.getDouble("humidity"));
+        mCurrent.setTime(currently.getLong("time"));
+        mCurrent.setIcon(currently.getString("icon"));
+        mCurrent.setPrecipChange(currently.getDouble("precipProbability"));
+        mCurrent.setSummery(currently.getString("summary"));
+        mCurrent.setTemperature(currently.getDouble("temperature"));
+        mCurrent.setTimeZone(timezone);
+        mCurrent.setWindSpeed(currently.getDouble("windSpeed"));
 
-        Log.d(TAG, currentWeather.getFormattedTime());
-        return currentWeather;
+        Log.d(TAG, mCurrent.getFormattedTime());
+        return mCurrent;
     }
 
     private boolean isNetworkAvailable() {
@@ -245,6 +248,7 @@ public class MainActivity extends Activity {
             List<Address> addressList = geo.getFromLocation(this.latitude,this.longitude,1);
             if (addressList.isEmpty()){
                 //gets the default name from the timeZone
+                //that we set in as a local variable
             }else{
                 if(addressList.size() > 0){
                     Log.v(MainActivity.class.getSimpleName(),addressList.get(0).getLocality() + ", "+ addressList.get(0).getCountryName()+"");

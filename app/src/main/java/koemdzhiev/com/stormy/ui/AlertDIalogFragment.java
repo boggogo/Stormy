@@ -1,10 +1,12 @@
-package koemdzhiev.com.stormy;
+package koemdzhiev.com.stormy.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+
+import koemdzhiev.com.stormy.R;
 
 /**
  * Created by koemdzhiev on 15/05/2015.
