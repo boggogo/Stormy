@@ -1,4 +1,4 @@
-package koemdzhiev.com.stormy.ui;
+package koemdzhiev.com.stormy.weather;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -27,8 +27,7 @@ public class MyLocation {
         try{network_enabled=lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);}catch(Exception ex){}
 
         //don't start listeners if no provider is enabled
-        if(!gps_enabled && !network_enabled)
-            return false;
+        if(!gps_enabled && !network_enabled) return false;
 
         if(gps_enabled)
             lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
@@ -97,7 +96,7 @@ public class MyLocation {
     }
     public void cancelTimer() {
         if(timer1 == null){
-            //if timer is null - the app crashes
+            //if timer is null and do the next line, the app crashes
         }else {
             timer1.cancel();
         }
