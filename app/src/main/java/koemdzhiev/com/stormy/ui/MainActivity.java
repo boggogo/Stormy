@@ -6,6 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -39,15 +41,15 @@ import koemdzhiev.com.stormy.weather.Current;
 import koemdzhiev.com.stormy.weather.Day;
 import koemdzhiev.com.stormy.weather.Forecast;
 import koemdzhiev.com.stormy.weather.Hour;
-import koemdzhiev.com.stormy.weather.MyLocation;
 
 
 public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
     private Forecast mForecast;
-    //default coordinates - Aberdeen, UK
-    private double latitude = 57.149717;
+    //default coordinates - Aberdeen, UK Lati:57.156866 ; Long:
+    private double latitude = 0;
     private double longitude = -2.094278;
+    private LocationManager locationManager;
 
     @InjectView(R.id.timeLabel) TextView mTimeLabel;
     @InjectView(R.id.temperatureLabel) TextView mTemperatureLabel;
@@ -60,7 +62,6 @@ public class MainActivity extends Activity {
     @InjectView(R.id.refreshImageView) ImageView mRefreshImaveView;
     @InjectView(R.id.progressBar) ProgressBar mProgressBar;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,41 +69,16 @@ public class MainActivity extends Activity {
         //-----------MY CODE STARTS HERE-----------------
         ButterKnife.inject(this);
         mProgressBar.setVisibility(View.INVISIBLE);
-        getCurrentLocation();
-
         mRefreshImaveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getCurrentLocation();
-                getForecast(latitude, longitude);
+                //getForecast(latitude, longitude);
+                getLocation();
             }
         });
+        //getForecast(latitude, longitude);
+        getLocation();
 
-        getForecast(latitude, longitude);
-        Log.d(TAG, "Main UI code is running!");
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getCurrentLocation();
-        getForecast(latitude, longitude);
-    }
-
-    private void getCurrentLocation() {
-        MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
-            @Override
-            public void gotLocation(Location location){
-                //Got the location!
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                Log.d(MainActivity.class.getSimpleName(), "Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude());
-            }
-        };
-        MyLocation myLocation = new MyLocation();
-        myLocation.getLocation(this, locationResult);
-        myLocation.cancelTimer();
     }
 
     private void getForecast(double latitude, double longitude) {
@@ -165,10 +141,7 @@ public class MainActivity extends Activity {
                         } else {
                             alertUserAboutError();
                         }
-                    } catch (IOException e) {
-                        Log.e(TAG, "Exception caught:", e);
-                    }
-                    catch (JSONException e){
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "Exception caught:", e);
                     }
                 }
@@ -192,7 +165,7 @@ public class MainActivity extends Activity {
     //updates the dysplay with the data in the CUrrentWeather locaal object
     private void updateDisplay() {
         Current current = mForecast.getCurrent();
-
+        //setting the current weather details to the ui
         mTemperatureLabel.setText(current.getTemperature()+"");
         mTimeLabel.setText("At "+ current.getFormattedTime()+" it will be");
         mHumidityValue.setText(current.getHumidity() +"%");
@@ -207,7 +180,7 @@ public class MainActivity extends Activity {
 
     }
 
-    private Forecast parseForecastDetails(String jsonData) throws JSONException{
+    private Forecast parseForecastDetails(String jsonData) throws JSONException {
         Forecast forecast = new Forecast();
         forecast.setCurrent(getCurrentDetails(jsonData));
         forecast.setHourlyForecast(getHourlyForecast(jsonData));
@@ -306,7 +279,43 @@ public class MainActivity extends Activity {
         AlertDIalogFragment dialog = new AlertDIalogFragment();
         dialog.show(getFragmentManager(),getString(R.string.error_dialog_text));
     }
+//------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
+private void getLocation(){
+    locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
+    if(isNetworkAvailable()){
+        toggleRefresh();
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, 1, 1000, new MyLocationListener());
+    }else{
+        WIFIDialogFragment dialog = new WIFIDialogFragment();
+        dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
+    }
+
+}
+    private class MyLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location loc) {
+            toggleRefresh();
+            latitude = loc.getLatitude();
+            longitude = loc.getLongitude();
+            //Toast.makeText(MainActivity.this,"Location changed: Lat: " + loc.getLatitude() + " Lng: "+ loc.getLongitude(), Toast.LENGTH_SHORT).show();
+            locationManager.removeUpdates(this);
+            getForecast(latitude, longitude);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {}
+
+        @Override
+        public void onProviderEnabled(String provider) {}
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
+    }
+
+    //external my method...
     private void getLocationName(){
         Geocoder geo = new Geocoder(this, Locale.getDefault());
         try {
