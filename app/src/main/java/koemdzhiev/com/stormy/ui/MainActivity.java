@@ -164,14 +164,14 @@ public class MainActivity extends Activity {
     //updates the dysplay with the data in the CUrrentWeather locaal object
     private void updateDisplay() {
         //animations
-        YoYo.with(Techniques.FadeIn).duration(1800).playOn(mLocationLabel);
-        YoYo.with(Techniques.FadeIn).duration(1600).playOn(mTemperatureLabel);
-        YoYo.with(Techniques.FadeIn).duration(1800).playOn(mIconImageView);
-        YoYo.with(Techniques.FadeIn).duration(1000).playOn(mSummaryLabel);
-        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mHumidityValue);
-        YoYo.with(Techniques.FadeIn).duration(1400).playOn(mWindSpeedValue);
-        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mPrecipValue);
-        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mTimeLabel);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mLocationLabel);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mTemperatureLabel);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mIconImageView);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mSummaryLabel);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mHumidityValue);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mWindSpeedValue);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mPrecipValue);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mTimeLabel);
         Current current = mForecast.getCurrent();
         //setting the current weather details to the ui
         mTemperatureLabel.setText(current.getTemperature()+"");
