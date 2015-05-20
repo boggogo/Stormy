@@ -2,6 +2,7 @@ package koemdzhiev.com.stormy.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -36,6 +37,7 @@ import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.weather.Current;
 import koemdzhiev.com.stormy.weather.Day;
@@ -279,6 +281,14 @@ public class MainActivity extends Activity {
         AlertDIalogFragment dialog = new AlertDIalogFragment();
         dialog.show(getFragmentManager(),getString(R.string.error_dialog_text));
     }
+    //using butter knife to inject onClick listener
+    @OnClick (R.id.dailyButton)
+    public void startDailyActivity(View view){
+        Intent intent = new Intent(this,DailyForecastActivity.class);
+        startActivity(intent);
+    }
+
+
 //------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
 private void getLocation(){
     locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
