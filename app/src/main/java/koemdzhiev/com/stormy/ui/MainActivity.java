@@ -83,17 +83,14 @@ public class MainActivity extends Activity {
 
     }
 
-    private void getForecast(double latitude, double longitude) {
-        //animations
-        YoYo.with(Techniques.FadeIn).duration(1800).playOn(mLocationLabel);
-        YoYo.with(Techniques.FadeIn).duration(1600).playOn(mTemperatureLabel);
-        YoYo.with(Techniques.FadeIn).duration(1800).playOn(mIconImageView);
-        YoYo.with(Techniques.FadeIn).duration(1000).playOn(mSummaryLabel);
-        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mHumidityValue);
-        YoYo.with(Techniques.FadeIn).duration(1400).playOn(mWindSpeedValue);
-        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mPrecipValue);
-        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mTimeLabel);
+    @Override
+    protected void onPause() {
+        super.onPause();
 
+
+    }
+
+    private void getForecast(double latitude, double longitude) {
         String API_KEY = "3ed3a1906736c6f6c467606bd1f91e2c";
         String forecast = "https://api.forecast.io/forecast/"+ API_KEY +"/"+ latitude+","+ longitude+"?units=auto";
 
@@ -166,6 +163,15 @@ public class MainActivity extends Activity {
     }
     //updates the dysplay with the data in the CUrrentWeather locaal object
     private void updateDisplay() {
+        //animations
+        YoYo.with(Techniques.FadeIn).duration(1800).playOn(mLocationLabel);
+        YoYo.with(Techniques.FadeIn).duration(1600).playOn(mTemperatureLabel);
+        YoYo.with(Techniques.FadeIn).duration(1800).playOn(mIconImageView);
+        YoYo.with(Techniques.FadeIn).duration(1000).playOn(mSummaryLabel);
+        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mHumidityValue);
+        YoYo.with(Techniques.FadeIn).duration(1400).playOn(mWindSpeedValue);
+        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mPrecipValue);
+        YoYo.with(Techniques.FadeIn).duration(1200).playOn(mTimeLabel);
         Current current = mForecast.getCurrent();
         //setting the current weather details to the ui
         mTemperatureLabel.setText(current.getTemperature()+"");
@@ -292,11 +298,11 @@ public class MainActivity extends Activity {
 //------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
 private void getLocation(){
     locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
+    toggleRefresh();
     if(isNetworkAvailable()){
-        toggleRefresh();
+
         locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 1, 1000, new MyLocationListener());
+                LocationManager.NETWORK_PROVIDER, 1000, 1000, new MyLocationListener());
     }else{
         WIFIDialogFragment dialog = new WIFIDialogFragment();
         dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
@@ -310,7 +316,7 @@ private void getLocation(){
             toggleRefresh();
             latitude = loc.getLatitude();
             longitude = loc.getLongitude();
-            //Toast.makeText(MainActivity.this,"Location changed: Lat: " + loc.getLatitude() + " Lng: "+ loc.getLongitude(), Toast.LENGTH_SHORT).show();
+            //stop listening to location updates after setting the latitude and lonitude
             locationManager.removeUpdates(this);
             getForecast(latitude, longitude);
         }
@@ -327,6 +333,7 @@ private void getLocation(){
 
     //external my method...
     private void getLocationName(){
+        Log.i(TAG,"Lattitude: " + latitude + " | " + "Longitude" + longitude);
         Geocoder geo = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addressList = geo.getFromLocation(this.latitude,this.longitude,1);
@@ -335,7 +342,7 @@ private void getLocation(){
                 //that we set in as a local variable
             }else{
                 if(addressList.size() > 0){
-                    Log.v(MainActivity.class.getSimpleName(),addressList.get(0).getLocality() + ", "+ addressList.get(0).getCountryName()+"");
+                    Log.v(MainActivity.class.getSimpleName(), addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName() + "");
                     mLocationLabel.setText(addressList.get(0).getLocality() + ", "+ addressList.get(0).getCountryName());
                 }
             }
