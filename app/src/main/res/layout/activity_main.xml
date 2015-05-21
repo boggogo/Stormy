@@ -45,10 +45,10 @@
         android:id="@+id/locationLabel"
         android:textColor="@android:color/white"
         android:textSize="24sp"
-        android:layout_marginBottom="58dp"
+        android:layout_marginBottom="50dp"
         android:layout_above="@+id/timeLabel"
-        android:layout_alignLeft="@+id/summaryLabel"
-        android:layout_alignStart="@+id/summaryLabel"/>
+        android:paddingLeft="38dp"
+        android:layout_toEndOf="@+id/iconImageView"/>
 
     <ImageView
         android:layout_width="wrap_content"
