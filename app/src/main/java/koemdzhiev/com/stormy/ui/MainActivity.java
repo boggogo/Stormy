@@ -48,6 +48,7 @@ import koemdzhiev.com.stormy.weather.Hour;
 public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
     private Forecast mForecast;
+    public static final String DAILY_FORECAST = "DAILY_FORECAST";
     //default coordinates - Aberdeen, UK Lati:57.156866 ; Long:
     private double latitude = 0;
     private double longitude = -2.094278;
@@ -83,19 +84,12 @@ public class MainActivity extends Activity {
 
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-
-    }
-
     private void getForecast(double latitude, double longitude) {
         String API_KEY = "3ed3a1906736c6f6c467606bd1f91e2c";
         String forecast = "https://api.forecast.io/forecast/"+ API_KEY +"/"+ latitude+","+ longitude+"?units=auto";
 
         if(isNetworkAvailable()) {
-            toggleRefresh();
+            //toggleRefresh();
 
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
@@ -163,15 +157,6 @@ public class MainActivity extends Activity {
     }
     //updates the dysplay with the data in the CUrrentWeather locaal object
     private void updateDisplay() {
-        //animations
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mLocationLabel);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mTemperatureLabel);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mIconImageView);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mSummaryLabel);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mHumidityValue);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mWindSpeedValue);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mPrecipValue);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mTimeLabel);
         Current current = mForecast.getCurrent();
         //setting the current weather details to the ui
         mTemperatureLabel.setText(current.getTemperature()+"");
@@ -184,6 +169,16 @@ public class MainActivity extends Activity {
         getLocationName();
         Drawable drawable = ContextCompat.getDrawable(this, current.getIconId());
         mIconImageView.setImageDrawable(drawable);
+        //-
+        //animations
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mLocationLabel);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mTemperatureLabel);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mIconImageView);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mSummaryLabel);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mHumidityValue);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mWindSpeedValue);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mPrecipValue);
+        YoYo.with(Techniques.FadeIn).duration(300).playOn(mTimeLabel);
 
 
     }
@@ -291,6 +286,7 @@ public class MainActivity extends Activity {
     @OnClick(R.id.dailyButton)
     public void startDailyActivity(View view){
         Intent intent = new Intent(this,DailyForecastActivity.class);
+        intent.putExtra(DAILY_FORECAST,mForecast.getDailyForecast());
         startActivity(intent);
     }
 
@@ -303,9 +299,12 @@ private void getLocation(){
 
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER, 1000, 1000, new MyLocationListener());
+        //toggleRefresh();
+
     }else{
         WIFIDialogFragment dialog = new WIFIDialogFragment();
         dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
+        toggleRefresh();
     }
 
 }
@@ -313,12 +312,11 @@ private void getLocation(){
 
         @Override
         public void onLocationChanged(Location loc) {
-            toggleRefresh();
             latitude = loc.getLatitude();
             longitude = loc.getLongitude();
             //stop listening to location updates after setting the latitude and lonitude
-            locationManager.removeUpdates(this);
             getForecast(latitude, longitude);
+            locationManager.removeUpdates(this);
         }
 
         @Override
@@ -343,7 +341,7 @@ private void getLocation(){
             }else{
                 if(addressList.size() > 0){
                     Log.v(MainActivity.class.getSimpleName(), addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName() + "");
-                    mLocationLabel.setText(addressList.get(0).getLocality() + ", "+ addressList.get(0).getCountryName());
+                    mLocationLabel.setText(addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName());
                 }
             }
         } catch (IOException e) {
