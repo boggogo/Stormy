@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
     private Forecast mForecast;
     public static final String DAILY_FORECAST = "DAILY_FORECAST";
+    public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
     //default coordinates - Aberdeen, UK Lati:57.156866 ; Long:
     private double latitude = 51.5072;
     private double longitude = 0.1275;
@@ -287,6 +288,13 @@ public class MainActivity extends Activity {
     public void startDailyActivity(View view){
         Intent intent = new Intent(this,DailyForecastActivity.class);
         intent.putExtra(DAILY_FORECAST,mForecast.getDailyForecast());
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.hourlyButton)
+    public void startHourlyActivity(View v){
+        Intent intent = new Intent(this,HourlyForecastActivity.class);
+        intent.putExtra(HOURLY_FORECAST,mForecast.getHourlyForecast());
         startActivity(intent);
     }
 
