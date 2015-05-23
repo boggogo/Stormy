@@ -52,9 +52,9 @@ public class MainActivity extends Activity {
     private Forecast mForecast;
     public static final String DAILY_FORECAST = "DAILY_FORECAST";
     public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
-    //default coordinates - Aberdeen, UK Lati:57.156866 ; Long:
-    private double latitude = 57.1526;
-    private double longitude = -2.1100;
+    //default coordinates - Gotse Delchev, UK Lati:57.156866 ; Long:
+    private double latitude = 41.5667;
+    private double longitude = 23.7333;
     private LocationManager locationManager;
 
     @InjectView(R.id.timeLabel) TextView mTimeLabel;

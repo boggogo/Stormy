@@ -183,18 +183,17 @@
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
         android:layout_below="@+id/summaryLabel"
-        android:layout_alignRight="@+id/locationLabel"
-        android:layout_alignEnd="@+id/locationLabel"/>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
+        android:layout_alignParentRight="true"
         android:layout_alignBottom="@+id/refreshImageView"
-        android:layout_toEndOf="@+id/summaryLabel"
         android:layout_alignTop="@+id/refreshImageView"
-        android:layout_alignLeft="@+id/refreshImageView"
-        android:layout_alignStart="@+id/refreshImageView"/>
+        android:layout_alignLeft="@+id/refreshImageView"/>
 
     <LinearLayout
         android:orientation="horizontal"
