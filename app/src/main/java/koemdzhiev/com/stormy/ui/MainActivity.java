@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -288,16 +289,25 @@ public class MainActivity extends Activity {
     @OnClick(R.id.dailyButton)
     public void startDailyActivity(View view){
         Intent intent = new Intent(this,DailyForecastActivity.class);
-        intent.putExtra(DAILY_FORECAST,mForecast.getDailyForecast());
-        intent.putExtra(LOCATION_KEY,mLocationLabel.getText());
-        startActivity(intent);
+        if(mForecast == null){
+            Toast.makeText(this,"THERE IS NO INFORMATION TO SHOW!",Toast.LENGTH_SHORT).show();
+        }else {
+            intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
+            intent.putExtra(LOCATION_KEY, mLocationLabel.getText());
+            startActivity(intent);
+        }
     }
 
     @OnClick(R.id.hourlyButton)
     public void startHourlyActivity(View v){
         Intent intent = new Intent(this,HourlyForecastActivity.class);
-        intent.putExtra(HOURLY_FORECAST,mForecast.getHourlyForecast());
-        startActivity(intent);
+        if(mForecast == null){
+            Toast.makeText(this,"THERE IS NO INFORMATION TO SHOW!",Toast.LENGTH_SHORT).show();
+        }else {
+            intent.putExtra(HOURLY_FORECAST,mForecast.getHourlyForecast());
+            startActivity(intent);
+        }
+
     }
 
 
