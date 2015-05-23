@@ -22,14 +22,19 @@ public class DailyForecastActivity extends Activity {
     private Day[] mDays;
     @InjectView(android.R.id.list) ListView mListView;
     @InjectView(android.R.id.empty) TextView mEmptyTextView;
+    private TextView mLocationLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_forecast);
         ButterKnife.inject(this);
+        mLocationLabel = (TextView)findViewById(R.id.LocationLabel);
 
         Intent intent = getIntent();
+        String location = intent.getStringExtra(MainActivity.LOCATION_KEY);
+        mLocationLabel.setText(location);
+
         Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.DAILY_FORECAST);
         mDays = Arrays.copyOf(parcelables,parcelables.length,Day[].class);
 
@@ -41,10 +46,10 @@ public class DailyForecastActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String dayOfTheWeek = mDays[position].getDayOfTheWeek();
                 String condition = mDays[position].getSummary();
-                String highTemp = mDays[position].getTemperatureMax()+"";
+                String highTemp = mDays[position].getTemperatureMax() + "";
 
-                String massage = String.format("On %s the high will be %s and it will be %s",dayOfTheWeek,highTemp,condition);
-                Toast.makeText(DailyForecastActivity.this,massage,Toast.LENGTH_LONG).show();
+                String massage = String.format("On %s the high will be %s and it will be %s", dayOfTheWeek, highTemp, condition);
+                Toast.makeText(DailyForecastActivity.this, massage, Toast.LENGTH_LONG).show();
             }
         });
     }

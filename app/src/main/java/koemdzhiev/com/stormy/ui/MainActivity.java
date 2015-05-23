@@ -47,6 +47,7 @@ import koemdzhiev.com.stormy.weather.Hour;
 
 public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String LOCATION_KEY = "location_key";
     private Forecast mForecast;
     public static final String DAILY_FORECAST = "DAILY_FORECAST";
     public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
@@ -288,6 +289,7 @@ public class MainActivity extends Activity {
     public void startDailyActivity(View view){
         Intent intent = new Intent(this,DailyForecastActivity.class);
         intent.putExtra(DAILY_FORECAST,mForecast.getDailyForecast());
+        intent.putExtra(LOCATION_KEY,mLocationLabel.getText());
         startActivity(intent);
     }
 
