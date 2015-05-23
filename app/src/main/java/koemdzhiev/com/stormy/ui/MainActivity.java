@@ -283,7 +283,7 @@ public class MainActivity extends Activity {
         AlertDIalogFragment dialog = new AlertDIalogFragment();
         dialog.show(getFragmentManager(),getString(R.string.error_dialog_text));
     }
-    //using butter knife to inject onClick listener
+    //using butter knife to inject onClick listener for the two buttons
     @OnClick(R.id.dailyButton)
     public void startDailyActivity(View view){
         Intent intent = new Intent(this,DailyForecastActivity.class);
