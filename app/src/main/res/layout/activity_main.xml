@@ -48,6 +48,7 @@
         android:layout_marginBottom="50dp"
         android:layout_above="@+id/timeLabel"
         android:paddingLeft="38dp"
+        android:layout_toRightOf="@+id/iconImageView"
         android:layout_toEndOf="@+id/iconImageView"/>
 
     <ImageView

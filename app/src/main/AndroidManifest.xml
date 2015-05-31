@@ -37,6 +37,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="koemdzhiev.com.stormy.ui.MainActivity" />
         </activity>
+        <activity
+            android:name=".MaterialUI.Main2Activity"
+            android:label="@string/title_activity_main2" >
+        </activity>
     </application>
 
 </manifest>
