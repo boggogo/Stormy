@@ -52,6 +52,9 @@ public class DailyForecastActivity extends Activity {
                 Toast.makeText(DailyForecastActivity.this, massage, Toast.LENGTH_LONG).show();
             }
         });
+
+        //Touch animations
+
     }
 
 

@@ -67,13 +67,16 @@ public class MainActivity extends Activity {
     @InjectView(R.id.iconImageView) ImageView mIconImageView;
     @InjectView(R.id.refreshImageView) ImageView mRefreshImaveView;
     @InjectView(R.id.progressBar) ProgressBar mProgressBar;
-
+    @InjectView(R.id.degreeImageView)ImageView mDegreeImageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //-----------MY CODE STARTS HERE-----------------
         ButterKnife.inject(this);
+
+        tochFeedback();
+        //--------- touch animations--------//
         mProgressBar.setVisibility(View.INVISIBLE);
         mRefreshImaveView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +88,55 @@ public class MainActivity extends Activity {
         //getForecast(latitude, longitude);
         getLocation();
 
+    }
+
+    private void tochFeedback() {
+        mTemperatureLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.Tada).duration(130).playOn(mTemperatureLabel);
+            }
+        }); mTimeLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.FadeInDown).duration(130).playOn(mTimeLabel);
+            }
+        });        mHumidityValue.setOnClickLiastener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.Tada).duration(130).playOn(mHumidityValue);
+            }
+        }); mPrecipValue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.Tada).duration(130).playOn(mPrecipValue);
+            }
+        }); mSummaryLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.Tada).duration(130).playOn(mSummaryLabel);
+            }
+        }); mLocationLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.Tada).duration(130).playOn(mLocationLabel);
+            }
+        });        mWindSpeedValue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.Tada).duration(130).playOn(mWindSpeedValue);
+            }
+        });        mIconImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.Tada).duration(130).playOn(mIconImageView);
+            }
+        });mDegreeImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                YoYo.with(Techniques.Tada).duration(130).playOn(mDegreeImageView);
+            }
+        });
     }
 
     private void getForecast(double latitude, double longitude) {
@@ -143,6 +195,7 @@ public class MainActivity extends Activity {
                 }
             });
         }else{
+            //toggleRefresh();
             //Toast.makeText(this,getString(R.string.network_unavailable_message),Toast.LENGTH_LONG).show();
             WIFIDialogFragment dialog = new WIFIDialogFragment();
             dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
@@ -319,7 +372,6 @@ private void getLocation(){
 
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER, 1000, 1000, new MyLocationListener());
-        //toggleRefresh();
 
     }else{
         WIFIDialogFragment dialog = new WIFIDialogFragment();
@@ -368,6 +420,8 @@ private void getLocation(){
             e.printStackTrace();
         }
     }
+    //
+
 
 
 }
