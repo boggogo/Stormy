@@ -101,7 +101,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 YoYo.with(Techniques.FadeInDown).duration(130).playOn(mTimeLabel);
             }
-        });        mHumidityValue.setOnClickLiastener(new View.OnClickListener() {
+        });        mHumidityValue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 YoYo.with(Techniques.Tada).duration(130).playOn(mHumidityValue);

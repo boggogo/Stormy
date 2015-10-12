@@ -4,7 +4,6 @@
                 android:layout_height="match_parent"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
                 tools:context=".MainActivity"
                 android:background="@drawable/bg_gradient">
 
@@ -169,32 +168,12 @@
         android:layout_height="wrap_content"
         android:text="Getting current weather..."
         android:id="@+id/summaryLabel"
-        android:layout_below="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:gravity="fill_horizontal"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/refreshImageView"
-        android:src="@mipmap/refresh"
-        android:scaleType="fitXY"
-        android:adjustViewBounds="true"
-        android:layout_below="@+id/summaryLabel"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:layout_alignParentRight="true"
-        android:layout_alignBottom="@+id/refreshImageView"
-        android:layout_alignTop="@+id/refreshImageView"
-        android:layout_alignLeft="@+id/refreshImageView"/>
+        android:layout_marginTop="15dp"
+        android:gravity="fill_horizontal"
+        android:layout_below="@+id/linearLayout"
+        android:layout_centerHorizontal="true"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -202,7 +181,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout2">
 
         <Button
             android:layout_width="match_parent"
@@ -223,4 +203,30 @@
             android:layout_marginLeft="2dp"
             android:textColor="#ffffffff"/>
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_above="@+id/linearLayout2"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/refreshImageView"
+            android:src="@mipmap/refresh"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_alignBottom="@+id/refreshImageView"
+            android:layout_alignTop="@+id/refreshImageView"/>
+    </RelativeLayout>
 </RelativeLayout>
