@@ -364,7 +364,7 @@ public class MainActivity extends Activity {
     }
 
 
-//------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
+    //------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
 private void getLocation(){
     locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
     toggleRefresh();

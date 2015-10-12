@@ -33,6 +33,7 @@
         android:layout_height="wrap_content"
         android:text="..."
         android:id="@+id/timeLabel"
+        android:textStyle="bold"
         android:layout_above="@+id/degreeImageView"
         android:layout_centerHorizontal="true"
         android:textColor="#80ffffff"/>
