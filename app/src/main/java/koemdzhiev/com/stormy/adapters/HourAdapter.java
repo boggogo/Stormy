@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.weather.Hour;
 
@@ -73,7 +76,14 @@ public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder
             String temperature = mTemperatureLabel.getText().toString();
             String summary = mSummaryLabel.getText().toString();
             String message = String.format("At %s it will be %s and %s",time,temperature,summary);
-            Toast.makeText(mContext,message,Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+
+            //play animations
+            YoYo.with(Techniques.Shake).duration(200).playOn(mTimeLabel);
+            YoYo.with(Techniques.Shake).duration(200).playOn(mTemperatureLabel);
+            YoYo.with(Techniques.Shake).duration(200).playOn(mIconImageView);
+            YoYo.with(Techniques.Shake).duration(200).playOn(mSummaryLabel);
+
         }
     }
 

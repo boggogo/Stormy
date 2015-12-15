@@ -1,9 +1,8 @@
 package koemdzhiev.com.stormy.ui;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -11,17 +10,16 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.Window;
+import android.view.WindowManager;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -36,20 +34,27 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.OnClick;
 import koemdzhiev.com.stormy.R;
+import koemdzhiev.com.stormy.adapters.ViewPagerAdapter;
 import koemdzhiev.com.stormy.weather.Current;
 import koemdzhiev.com.stormy.weather.Day;
 import koemdzhiev.com.stormy.weather.Forecast;
 import koemdzhiev.com.stormy.weather.Hour;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
+    ViewPager pager;
+    ViewPagerAdapter adapter;
+    SlidingTabLayout tabs;
+    CharSequence Titles[]={"Current","Hourly","Daily"};
+    int Numboftabs =3;
+    Current_forecast_fragment mCurrent_forecast_fragment;
+    Hourly_forecast_fragment mHourly_forecast_fragment;
+    Daily_forecast_fragment mDaily_forecast_fragment;
+
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String LOCATION_KEY = "location_key";
-    private Forecast mForecast;
+    public Forecast mForecast;
     public static final String DAILY_FORECAST = "DAILY_FORECAST";
     public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
     //default coordinates - Gotse Delchev, UK Lati:57.156866 ; Long:
@@ -57,94 +62,51 @@ public class MainActivity extends Activity {
     private double longitude = 23.7333;
     private LocationManager locationManager;
 
-    @InjectView(R.id.timeLabel) TextView mTimeLabel;
-    @InjectView(R.id.temperatureLabel) TextView mTemperatureLabel;
-    @InjectView(R.id.humidityValue) TextView mHumidityValue;
-    @InjectView(R.id.precipValue) TextView mPrecipValue;
-    @InjectView(R.id.summaryLabel) TextView mSummaryLabel;
-    @InjectView(R.id.locationLabel) TextView mLocationLabel;
-    @InjectView(R.id.windSpeedValue) TextView mWindSpeedValue;
-    @InjectView(R.id.iconImageView) ImageView mIconImageView;
-    @InjectView(R.id.refreshImageView) ImageView mRefreshImaveView;
-    @InjectView(R.id.progressBar) ProgressBar mProgressBar;
-    @InjectView(R.id.degreeImageView)ImageView mDegreeImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //-----------MY CODE STARTS HERE-----------------
-        ButterKnife.inject(this);
-
-        tochFeedback();
-        //--------- touch animations--------//
-        mProgressBar.setVisibility(View.INVISIBLE);
-        mRefreshImaveView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //getForecast(latitude, longitude);
-                getLocation();
-            }
-        });
-        //getForecast(latitude, longitude);
+        changeWindowTopColor();
+        this.mCurrent_forecast_fragment = new Current_forecast_fragment();
+        this.mHourly_forecast_fragment = new Hourly_forecast_fragment();
+        this.mDaily_forecast_fragment = new Daily_forecast_fragment();
         getLocation();
 
-    }
+        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
+        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs,mCurrent_forecast_fragment,
+                mHourly_forecast_fragment,mDaily_forecast_fragment);
 
-    private void tochFeedback() {
-        mTemperatureLabel.setOnClickListener(new View.OnClickListener() {
+        // Assigning ViewPager View and setting the adapter
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setOffscreenPageLimit(3);
+        pager.setAdapter(adapter);
+
+        // Assiging the Sliding Tab Layout View
+        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+
+        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mTemperatureLabel);
-            }
-        }); mTimeLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.FadeInDown).duration(130).playOn(mTimeLabel);
-            }
-        });        mHumidityValue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mHumidityValue);
-            }
-        }); mPrecipValue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mPrecipValue);
-            }
-        }); mSummaryLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mSummaryLabel);
-            }
-        }); mLocationLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mLocationLabel);
-            }
-        });        mWindSpeedValue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mWindSpeedValue);
-            }
-        });        mIconImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mIconImageView);
-            }
-        });mDegreeImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mDegreeImageView);
+            public int getIndicatorColor(int position) {
+                return ContextCompat.getColor(MainActivity.this,R.color.tabsScrollColor);
             }
         });
+
+        // Setting the ViewPager For the SlidingTabsLayout
+        tabs.setViewPager(pager);
+
+
     }
 
     private void getForecast(double latitude, double longitude) {
         String API_KEY = "3ed3a1906736c6f6c467606bd1f91e2c";
-        String forecast = "https://api.forecast.io/forecast/"+ API_KEY +"/"+ latitude+","+ longitude+"?units=auto";
+        String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=auto";
 
-        if(isNetworkAvailable()) {
-            //toggleRefresh();
+        if (isNetworkAvailable()) {
+//            mCurrent_forecast_fragment.toggleRefresh();
 
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
@@ -159,29 +121,33 @@ public class MainActivity extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            toggleRefresh();
+                            mCurrent_forecast_fragment.toggleRefresh();
                         }
                     });
                     alertUserAboutError();
                 }
+
                 //when the call to the Okhttp library finishes, than calls this method:
                 @Override
                 public void onResponse(Response response) throws IOException {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            toggleRefresh();
+                            mCurrent_forecast_fragment.toggleRefresh();
                         }
                     });
                     try {
                         String jsonData = response.body().string();
                         //Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
-                           mForecast = parseForecastDetails(jsonData);
+                            mForecast = parseForecastDetails(jsonData);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    updateDisplay();
+                                  mCurrent_forecast_fragment.updateDisplay();
+                                    mHourly_forecast_fragment.setUpHourlyFragment();
+                                    mDaily_forecast_fragment.setUpDailyFragment();
+
                                 }
                             });
 
@@ -194,50 +160,17 @@ public class MainActivity extends Activity {
                     }
                 }
             });
-        }else{
-            //toggleRefresh();
+        } else {
+//            mCurrent_forecast_fragment.toggleRefresh();
             //Toast.makeText(this,getString(R.string.network_unavailable_message),Toast.LENGTH_LONG).show();
             WIFIDialogFragment dialog = new WIFIDialogFragment();
             dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
         }
     }
 
-    private void toggleRefresh() {
-        if(mProgressBar.getVisibility() == View.INVISIBLE){
-            mProgressBar.setVisibility(View.VISIBLE);
-            mRefreshImaveView.setVisibility(View.INVISIBLE);
-        }else{
-            mProgressBar.setVisibility(View.INVISIBLE);
-            mRefreshImaveView.setVisibility(View.VISIBLE);
-        }
-    }
-    //updates the dysplay with the data in the CUrrentWeather locaal object
-    private void updateDisplay() {
-        Current current = mForecast.getCurrent();
-        //setting the current weather details to the ui
-        mTemperatureLabel.setText(current.getTemperature()+"");
-        mTimeLabel.setText("At "+ current.getFormattedTime()+" it will be");
-        mHumidityValue.setText(current.getHumidity() +"%");
-        mPrecipValue.setText(current.getPrecipChange()+"%");
-        mSummaryLabel.setText(current.getSummery());
-        mWindSpeedValue.setText(current.getWindSpeed()+"");
-        mLocationLabel.setText(current.getTimeZone());
-        getLocationName();
-        Drawable drawable = ContextCompat.getDrawable(this, current.getIconId());
-        mIconImageView.setImageDrawable(drawable);
-        //-
-        //animations
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mLocationLabel);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mTemperatureLabel);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mIconImageView);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mSummaryLabel);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mHumidityValue);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mWindSpeedValue);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mPrecipValue);
-        YoYo.with(Techniques.FadeIn).duration(300).playOn(mTimeLabel);
 
 
-    }
+
 
     private Forecast parseForecastDetails(String jsonData) throws JSONException {
         Forecast forecast = new Forecast();
@@ -248,7 +181,7 @@ public class MainActivity extends Activity {
         return forecast;
     }
 
-    private Day[] getDailyForecast(String jsonData) throws JSONException{
+    private Day[] getDailyForecast(String jsonData) throws JSONException {
         JSONObject forecast = new JSONObject(jsonData);
         String timezone = forecast.getString("timezone");
         JSONObject daily = forecast.getJSONObject("daily");
@@ -256,7 +189,7 @@ public class MainActivity extends Activity {
 
         Day[] days = new Day[data.length()];
 
-        for(int i = 0;i < data.length();i++){
+        for (int i = 0; i < data.length(); i++) {
             JSONObject jsonDay = data.getJSONObject(i);
             Day day = new Day();
 
@@ -268,21 +201,21 @@ public class MainActivity extends Activity {
 
             days[i] = day;
 
-            Log.v(MainActivity.class.getSimpleName(),days[i].getIcon());
+            Log.v(MainActivity.class.getSimpleName(), days[i].getIcon());
         }
 
         return days;
     }
 
-    private Hour[] getHourlyForecast(String jsonData) throws JSONException{
+    private Hour[] getHourlyForecast(String jsonData) throws JSONException {
         JSONObject forecast = new JSONObject(jsonData);
         String timezone = forecast.getString("timezone");
         JSONObject hourly = forecast.getJSONObject("hourly");
         JSONArray data = hourly.getJSONArray("data");
 
-        Hour[]hours = new Hour[data.length()];
+        Hour[] hours = new Hour[data.length()];
 
-        for(int i = 0;i < data.length();i++){
+        for (int i = 0; i < data.length(); i++) {
             JSONObject jsonHour = data.getJSONObject(i);
             Hour hour = new Hour();
 
@@ -302,10 +235,10 @@ public class MainActivity extends Activity {
      * throws JSONException, doing it like that, we place the
      * responsability of handaling this exeption to the caller of the method
     */
-    private Current getCurrentDetails(String jsonData) throws JSONException{
+    private Current getCurrentDetails(String jsonData) throws JSONException {
         JSONObject forecast = new JSONObject(jsonData);
         String timezone = forecast.getString("timezone");
-        Log.i(TAG,"From JSON: " + timezone);
+        Log.i(TAG, "From JSON: " + timezone);
 
         JSONObject currently = forecast.getJSONObject("currently");
         Current mCurrent = new Current();
@@ -322,12 +255,12 @@ public class MainActivity extends Activity {
         return mCurrent;
     }
 
-    private boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         boolean isAvailable = false;
         //contition to check if there is a network and if the device is connected
-        if(networkInfo != null && networkInfo.isConnected()){
+        if (networkInfo != null && networkInfo.isConnected()) {
             isAvailable = true;
         }
 
@@ -336,50 +269,61 @@ public class MainActivity extends Activity {
 
     private void alertUserAboutError() {
         AlertDIalogFragment dialog = new AlertDIalogFragment();
-        dialog.show(getFragmentManager(),getString(R.string.error_dialog_text));
+        dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
     }
+
     //using butter knife to inject onClick listener for the two buttons
-    @OnClick(R.id.dailyButton)
-    public void startDailyActivity(View view){
-        Intent intent = new Intent(this,DailyForecastActivity.class);
-        if(mForecast == null){
-            Toast.makeText(this,"THERE IS NO INFORMATION TO SHOW!",Toast.LENGTH_SHORT).show();
-        }else {
-            intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
-            intent.putExtra(LOCATION_KEY, mLocationLabel.getText());
-            startActivity(intent);
-        }
-    }
+//    @OnClick(R.id.dailyButton)
+//    public void startDailyActivity(View view) {
+//        Intent intent = new Intent(this, DailyForecastActivity.class);
+//        if (mForecast == null) {
+//            Toast.makeText(this, "THERE IS NO INFORMATION TO SHOW!", Toast.LENGTH_SHORT).show();
+//        } else {
+//            intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
+//            intent.putExtra(LOCATION_KEY, mLocationLabel.getText());
+//            startActivity(intent);
+//        }
+//    }
 
-    @OnClick(R.id.hourlyButton)
-    public void startHourlyActivity(View v){
-        Intent intent = new Intent(this,HourlyForecastActivity.class);
-        if(mForecast == null){
-            Toast.makeText(this,"THERE IS NO INFORMATION TO SHOW!",Toast.LENGTH_SHORT).show();
-        }else {
-            intent.putExtra(HOURLY_FORECAST,mForecast.getHourlyForecast());
-            startActivity(intent);
-        }
-
-    }
+//    @OnClick(R.id.hourlyButton)
+//    public void startHourlyActivity(View v) {
+//        Intent intent = new Intent(this, HourlyForecastActivity.class);
+//        if (mForecast == null) {
+//            Toast.makeText(this, "THERE IS NO INFORMATION TO SHOW!", Toast.LENGTH_SHORT).show();
+//        } else {
+//            intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
+//            startActivity(intent);
+//        }
+//
+//    }
 
 
     //------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
-private void getLocation(){
-    locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-    toggleRefresh();
-    if(isNetworkAvailable()){
+    public void getLocation() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (isNetworkAvailable()) {
+            mCurrent_forecast_fragment.toggleRefresh();
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, 1000, 1000, new MyLocationListener());
 
-        locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 1000, 1000, new MyLocationListener());
+        } else {
+            WIFIDialogFragment dialog = new WIFIDialogFragment();
+            dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
+//            mCurrent_forecast_fragment.toggleRefresh();
+        }
 
-    }else{
-        WIFIDialogFragment dialog = new WIFIDialogFragment();
-        dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
-        toggleRefresh();
     }
 
-}
     private class MyLocationListener implements LocationListener {
 
         @Override
@@ -388,6 +332,16 @@ private void getLocation(){
             longitude = loc.getLongitude();
             //stop listening to location updates after setting the latitude and lonitude
             getForecast(latitude, longitude);
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             locationManager.removeUpdates(this);
         }
 
@@ -402,7 +356,7 @@ private void getLocation(){
     }
 
     //external my method...
-    private void getLocationName(){
+    public void getLocationName(){
         Log.i(TAG,"Lattitude: " + latitude + " | " + "Longitude" + longitude);
         Geocoder geo = new Geocoder(this, Locale.getDefault());
         try {
@@ -413,7 +367,7 @@ private void getLocation(){
             }else{
                 if(addressList.size() > 0){
                     Log.v(MainActivity.class.getSimpleName(), addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName() + "");
-                    mLocationLabel.setText(addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName());
+                    mCurrent_forecast_fragment.mLocationLabel.setText(addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName());
                 }
             }
         } catch (IOException e) {
@@ -422,6 +376,11 @@ private void getLocation(){
     }
     //
 
-
-
+    private void changeWindowTopColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.ColorPrimaryDark));
+        }
+    }
 }

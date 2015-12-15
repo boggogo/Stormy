@@ -21,22 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.DailyForecastActivity"
-            android:label="@string/title_activity_daily_forecast"
-            android:parentActivityName=".ui.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="koemdzhiev.com.stormy.ui.MainActivity" />
-        </activity>
-        <activity
-            android:name=".ui.HourlyForecastActivity"
-            android:label="@string/title_activity_hourly_forecast"
-            android:parentActivityName=".ui.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="koemdzhiev.com.stormy.ui.MainActivity" />
-        </activity>
     </application>
 
 </manifest>
