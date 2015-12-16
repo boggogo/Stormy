@@ -3,6 +3,7 @@ package koemdzhiev.com.stormy.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import koemdzhiev.com.stormy.weather.Day;
  */
 public class Daily_forecast_fragment extends Fragment {
     private Day[] mDays;
+    @InjectView(R.id.daily_swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @InjectView(android.R.id.list)
     ListView mListView;
     @InjectView(android.R.id.empty)
@@ -38,6 +41,24 @@ public class Daily_forecast_fragment extends Fragment {
         View v =inflater.inflate(R.layout.daily_forecast_fragment,container,false);
         ButterKnife.inject(this, v);
 
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.blue, R.color.orange);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //if there is internet and if the mSwipeRefreshLayout in the current and hourly fragments are not already running...
+                if (mActivity.isNetworkAvailable()) {
+                    if (!mActivity.mCurrent_forecast_fragment.mSwipeRefreshLayout.isRefreshing() && !mActivity.mHourly_forecast_fragment.mSwipeRefreshLayout.isRefreshing()) {
+                        mActivity.getLocation();
+                    } else {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(mActivity, "currently refreshing...", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(mActivity, "No Internet Connection!", Toast.LENGTH_SHORT).show();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
         mLocationLabel = (TextView)v.findViewById(R.id.LocationLabel);
         return v;
     }
@@ -66,10 +87,8 @@ public class Daily_forecast_fragment extends Fragment {
                 String dayOfTheWeek = mDays[position].getDayOfTheWeek();
                 String condition = mDays[position].getSummary();
                 String highTemp = mDays[position].getTemperatureMax() + "";
-
                 String massage = String.format("On %s the high will be %s and it will be %s", dayOfTheWeek, highTemp, condition);
                 Toast.makeText(mActivity, massage, Toast.LENGTH_LONG).show();
-
                 //play animations
                 YoYo.with(Techniques.Shake).duration(200).playOn(view);
 

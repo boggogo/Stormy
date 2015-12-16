@@ -121,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mCurrent_forecast_fragment.toggleRefresh();
+//                            mCurrent_forecast_fragment.toggleRefresh();
+                            toggleSwipeRefreshLayoutsOff();
                         }
                     });
                     alertUserAboutError();
@@ -133,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mCurrent_forecast_fragment.toggleRefresh();
+//                            mCurrent_forecast_fragment.toggleRefresh();
+                            toggleSwipeRefreshLayoutsOff();
                         }
                     });
                     try {
@@ -162,14 +164,22 @@ public class MainActivity extends AppCompatActivity {
             });
         } else {
 //            mCurrent_forecast_fragment.toggleRefresh();
-            //Toast.makeText(this,getString(R.string.network_unavailable_message),Toast.LENGTH_LONG).show();
-            WIFIDialogFragment dialog = new WIFIDialogFragment();
-            dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
+            toggleSwipeRefreshLayoutsOff();
+//            Toast.makeText(this,getString(R.string.network_unavailable_message), Toast.LENGTH_LONG).show();
+            alertForNoInternet();
         }
     }
 
+    private void toggleSwipeRefreshLayoutsOff() {
+        mHourly_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
+        mCurrent_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
+        mDaily_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
+    }
 
-
+    public void alertForNoInternet() {
+        WIFIDialogFragment dialog = new WIFIDialogFragment();
+        dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
+    }
 
 
     private Forecast parseForecastDetails(String jsonData) throws JSONException {
@@ -302,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
     public void getLocation() {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (isNetworkAvailable()) {
-            mCurrent_forecast_fragment.toggleRefresh();
+//            mCurrent_forecast_fragment.toggleRefresh();
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -317,9 +327,7 @@ public class MainActivity extends AppCompatActivity {
                     LocationManager.NETWORK_PROVIDER, 1000, 1000, new MyLocationListener());
 
         } else {
-            WIFIDialogFragment dialog = new WIFIDialogFragment();
-            dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
-//            mCurrent_forecast_fragment.toggleRefresh();
+            alertForNoInternet();
         }
 
     }

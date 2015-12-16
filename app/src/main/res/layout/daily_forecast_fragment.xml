@@ -7,8 +7,7 @@
                 android:paddingTop="0dp"
                 android:paddingBottom="1dp"
                 tools:context="koemdzhiev.com.stormy.ui.DailyForecastActivity"
-                android:background="@drawable/bg_gradient"
-                android:id="@+id/dactivity_daily_forecast">
+                android:background="@drawable/bg_gradient">
 
     <TextView
         android:layout_width="wrap_content"
@@ -49,6 +48,10 @@
         android:layout_above="@+id/LocationLabel"
         android:layout_centerInParent="true">
 
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/daily_swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -57,6 +60,7 @@
             android:layout_marginBottom="8dp"
             android:divider="@null"
             android:dividerHeight="0dp"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 
 </RelativeLayout>

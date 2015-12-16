@@ -3,5 +3,9 @@
     <color name="ColorPrimary">#FF6600</color>
     <color name="ColorPrimaryDark">#E65100</color>
     <color name="tabsScrollColor">@android:color/white</color>
+    <!-- swipeRefreshLayout colors-->
+    <color name="orange">#FF9900</color>
+    <color name="green">#009900</color>
+    <color name="blue">#000099</color>
 </resources>
 

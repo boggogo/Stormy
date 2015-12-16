@@ -16,7 +16,7 @@ import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.weather.Hour;
 
 /**
- * Created by koemdzhiev on 22/05/2015.
+ * Created by koemdzhiev on 22/05/2015. CURRENTLY NOT USED!!!
  */
 public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder> {
     private Hour[] mHours;
