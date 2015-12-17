@@ -1,5 +1,9 @@
 package koemdzhiev.com.stormy.ui;
 
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -34,7 +38,8 @@ public class Daily_forecast_fragment extends Fragment {
     ListView mListView;
     @InjectView(android.R.id.empty)
     TextView mEmptyTextView;
-    private TextView mLocationLabel;
+    @InjectView(R.id.developer_email)
+    TextView mDeveloperEmail;
     private MainActivity mActivity;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,7 +64,23 @@ public class Daily_forecast_fragment extends Fragment {
                 }
             }
         });
-        mLocationLabel = (TextView)v.findViewById(R.id.LocationLabel);
+
+        mDeveloperEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PackageInfo pInfo = null;
+                try {
+                    pInfo = mActivity.getPackageManager().getPackageInfo(mActivity.getPackageName(), 0);
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+                String version = pInfo.versionName;
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:koemdjiev@gmail.com"));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + ", version: " + version);
+
+                startActivity(Intent.createChooser(emailIntent, "Chooser Title"));
+            }
+        });
         return v;
     }
 
@@ -71,9 +92,6 @@ public class Daily_forecast_fragment extends Fragment {
     }
 
     public void setUpDailyFragment(){
-
-        String location = mActivity.mCurrent_forecast_fragment.mLocationLabel.getText().toString();
-        mLocationLabel.setText(location);
 
         Day[] myDayArr = mActivity.mForecast.getDailyForecast();
         mDays = Arrays.copyOf(myDayArr, myDayArr.length, Day[].class);

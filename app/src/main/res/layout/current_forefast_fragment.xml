@@ -4,19 +4,6 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_gradient">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/current_swipe_refresh_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@android:id/list"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:divider="@null"
-            android:dividerHeight="0dp"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -185,35 +172,18 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="46dp"/>
 
-
-    <!--<RelativeLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_marginBottom= "10dp"-->
-        <!-->-->
-
-        <!--<ImageView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/refreshImageView"-->
-            <!--android:src="@mipmap/refresh"-->
-            <!--android:scaleType="fitXY"-->
-            <!--android:adjustViewBounds="true"-->
-            <!--android:layout_alignLeft="@+id/progressBar"-->
-            <!--android:layout_alignStart="@+id/progressBar"-->
-            <!--android:layout_alignTop="@+id/progressBar"-->
-            <!--android:layout_alignBottom="@+id/progressBar"-->
-            <!--android:layout_alignRight="@+id/progressBar"/>-->
-
-        <!--<ProgressBar-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/progressBar"-->
-            <!--android:layout_centerHorizontal="true"/>-->
-
-    <!--</RelativeLayout>-->
-
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/current_swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@android:id/list"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:divider="@null"
+            android:dividerHeight="0dp"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

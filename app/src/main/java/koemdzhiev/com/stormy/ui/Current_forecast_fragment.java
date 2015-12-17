@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,10 +43,6 @@ public class Current_forecast_fragment extends Fragment {
     TextView mWindSpeedValue;
     @InjectView(R.id.iconImageView)
     ImageView mIconImageView;
-//    @InjectView(R.id.refreshImageView)
-//    ImageView mRefreshImaveView;
-//    @InjectView(R.id.progressBar)
-    ProgressBar mProgressBar;
     @InjectView(R.id.degreeImageView)
     ImageView mDegreeImageView;
     @InjectView(R.id.current_swipe_refresh_layout)
@@ -95,32 +90,10 @@ public class Current_forecast_fragment extends Fragment {
             }
         });
 
-//        if (mActivity.isNetworkAvailable()) {
-//            mRefreshImaveView.setVisibility(View.INVISIBLE);
-//        }else{
-//            mRefreshImaveView.setVisibility(View.VISIBLE);
-//            mProgressBar.setVisibility(View.INVISIBLE);
-//        }
-        tochFeedback();
         return v;
     }
 
 
-
-//    public void toggleRefresh() {
-//        if (mProgressBar != null) {
-//            if (mProgressBar.getVisibility() == View.INVISIBLE) {
-//                mProgressBar.setVisibility(View.VISIBLE);
-//                mRefreshImaveView.setVisibility(View.INVISIBLE);
-//            } else {
-//                mProgressBar.setVisibility(View.INVISIBLE);
-//                mRefreshImaveView.setVisibility(View.VISIBLE);
-//            }
-//        }
-//
-//        // updates the dysplay with the data in the CUrrentWeather locaal object
-//
-//    }
 
     public void updateDisplay() {
         Current current = mActivity.mForecast.getCurrent();
@@ -148,73 +121,66 @@ public class Current_forecast_fragment extends Fragment {
 
     }
 
-//        @OnClick(R.id.refreshImageView)
-//    public void refreshButton(View v) {
-//
-//            if(mActivity.isNetworkAvailable()) {
-////            mActivity.mForecast.getHourlyForecast();
-//                mActivity.getLocation();
-//            }else {
-//                Toast.makeText(mActivity, "No Internet Connection!", Toast.LENGTH_LONG).show();
-//            }
-//    }
 
-        private void tochFeedback() {
-        mTemperatureLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mTemperatureLabel);
-            }
-        });
-        mTimeLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.FadeInDown).duration(130).playOn(mTimeLabel);
-            }
-        });
-        mHumidityValue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mHumidityValue);
-            }
-        });
-        mPrecipValue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mPrecipValue);
-            }
-        });
-        mSummaryLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mSummaryLabel);
-            }
-        });
-        mLocationLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mLocationLabel);
-            }
-        });
-        mWindSpeedValue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mWindSpeedValue);
-            }
-        });
-        mIconImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mIconImageView);
-            }
-        });
-        mDegreeImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                YoYo.with(Techniques.Tada).duration(130).playOn(mDegreeImageView);
-            }
-        });
-    }
+            /*--------Cannot uset it on this screen - >  the swipeRefreshlayout prefents the user from touching the vies
+                and the layout has to be above the views in order to catch the swipe gesture
+            */
+//        private void tochFeedback() {
+//        mTemperatureLabel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.Tada).duration(130).playOn(mTemperatureLabel);
+//            }
+//        });
+//        mTimeLabel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.FadeInDown).duration(130).playOn(mTimeLabel);
+//            }
+//        });
+//        mHumidityValue.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.Tada).duration(130).playOn(mHumidityValue);
+//            }
+//        });
+//        mPrecipValue.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.Tada).duration(130).playOn(mPrecipValue);
+//            }
+//        });
+//        mSummaryLabel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.Tada).duration(130).playOn(mSummaryLabel);
+//            }
+//        });
+//        mLocationLabel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.Tada).duration(130).playOn(mLocationLabel);
+//            }
+//        });
+//        mWindSpeedValue.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.Tada).duration(130).playOn(mWindSpeedValue);
+//            }
+//        });
+//        mIconImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.Tada).duration(130).playOn(mIconImageView);
+//            }
+//        });
+//        mDegreeImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                YoYo.with(Techniques.Tada).duration(130).playOn(mDegreeImageView);
+//            }
+//        });
+//    }
 
 }
 

@@ -14,4 +14,5 @@
     <string name="title_activity_hourly_forecast">HourlyForecastActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_main_activity_material_ui">MainActivityMaterialUI</string>
+    <string name="developer_email">Developer:<u>koemdjiev@gmail.com</u>.</string>
 </resources>

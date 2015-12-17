@@ -282,30 +282,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.show(getFragmentManager(), getString(R.string.error_dialog_text));
     }
 
-    //using butter knife to inject onClick listener for the two buttons
-//    @OnClick(R.id.dailyButton)
-//    public void startDailyActivity(View view) {
-//        Intent intent = new Intent(this, DailyForecastActivity.class);
-//        if (mForecast == null) {
-//            Toast.makeText(this, "THERE IS NO INFORMATION TO SHOW!", Toast.LENGTH_SHORT).show();
-//        } else {
-//            intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
-//            intent.putExtra(LOCATION_KEY, mLocationLabel.getText());
-//            startActivity(intent);
-//        }
-//    }
-
-//    @OnClick(R.id.hourlyButton)
-//    public void startHourlyActivity(View v) {
-//        Intent intent = new Intent(this, HourlyForecastActivity.class);
-//        if (mForecast == null) {
-//            Toast.makeText(this, "THERE IS NO INFORMATION TO SHOW!", Toast.LENGTH_SHORT).show();
-//        } else {
-//            intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
-//            startActivity(intent);
-//        }
-//
-//    }
 
 
     //------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
