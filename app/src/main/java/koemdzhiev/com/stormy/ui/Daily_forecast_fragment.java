@@ -40,6 +40,8 @@ public class Daily_forecast_fragment extends Fragment {
     TextView mEmptyTextView;
     @InjectView(R.id.developer_email)
     TextView mDeveloperEmail;
+    @InjectView(R.id.appVersion)
+    TextView mAppVersion;
     private MainActivity mActivity;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -64,23 +66,24 @@ public class Daily_forecast_fragment extends Fragment {
                 }
             }
         });
-
+        PackageInfo pInfo = null;
+        try {
+            pInfo = mActivity.getPackageManager().getPackageInfo(mActivity.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        final String version = pInfo.versionName;
         mDeveloperEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PackageInfo pInfo = null;
-                try {
-                    pInfo = mActivity.getPackageManager().getPackageInfo(mActivity.getPackageName(), 0);
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-                String version = pInfo.versionName;
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:koemdjiev@gmail.com"));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + ", version: " + version);
 
                 startActivity(Intent.createChooser(emailIntent, "Chooser Title"));
             }
         });
+
+        mAppVersion.setText("v "+version);
         return v;
     }
 
