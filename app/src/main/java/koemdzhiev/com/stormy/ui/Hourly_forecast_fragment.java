@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +18,6 @@ import com.daimajia.androidanimations.library.YoYo;
 
 import java.util.Arrays;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.adapters.HourListAdapter;
 import koemdzhiev.com.stormy.weather.Hour;
@@ -32,13 +28,8 @@ import koemdzhiev.com.stormy.weather.Hour;
 public class Hourly_forecast_fragment extends Fragment {
     private Hour[] mHours;
     private MainActivity mActivity;
-    @InjectView(R.id.hourly_swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    @InjectView(android.R.id.empty)
+    public SwipeRefreshLayout mSwipeRefreshLayout;
     TextView mEmptyTextView;
-    RecyclerView.LayoutManager layoutManager;
-    //inject the RecyclerView as member variable
-    @InjectView(android.R.id.list)
     ListView mListView;
 
     @Override
@@ -53,11 +44,10 @@ public class Hourly_forecast_fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.hourly_forecast_fragment,container,false);
-        ButterKnife.inject(this, v);
-        layoutManager = new LinearLayoutManager(mActivity);
-//        mRecyclerView.setLayoutManager(layoutManager);
+        mEmptyTextView = (TextView)v.findViewById(android.R.id.empty);
+        mListView = (ListView)v.findViewById(android.R.id.list);
+        mSwipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.hourly_swipe_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green,R.color.blue,R.color.orange);
-//        if (mRecyclerView != null)
             mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
@@ -89,11 +79,6 @@ public class Hourly_forecast_fragment extends Fragment {
             HourListAdapter adapter = new HourListAdapter(mActivity, mHours);
             mListView.setEmptyView(mEmptyTextView);
             mListView.setAdapter(adapter);
-//            mRecyclerView.setHasFixedSize(true);
-//            layoutManager = new LinearLayoutManager(mActivity);
-//            mRecyclerView.setLayoutManager(layoutManager);
-//            //if dealing with fixed size data, it is recommended to do the following...
-//            mRecyclerView.setHasFixedSize(true);
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {

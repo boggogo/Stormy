@@ -21,8 +21,6 @@ import com.daimajia.androidanimations.library.YoYo;
 
 import java.util.Arrays;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.adapters.DayAdapter;
 import koemdzhiev.com.stormy.weather.Day;
@@ -32,22 +30,19 @@ import koemdzhiev.com.stormy.weather.Day;
  */
 public class Daily_forecast_fragment extends Fragment {
     private Day[] mDays;
-    @InjectView(R.id.daily_swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    @InjectView(android.R.id.list)
+    public SwipeRefreshLayout mSwipeRefreshLayout;
     ListView mListView;
-    @InjectView(android.R.id.empty)
     TextView mEmptyTextView;
-    @InjectView(R.id.developer_email)
     TextView mDeveloperEmail;
-    @InjectView(R.id.appVersion)
     TextView mAppVersion;
     private MainActivity mActivity;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.daily_forecast_fragment,container,false);
-        ButterKnife.inject(this, v);
-
+        mListView = (ListView)v.findViewById(android.R.id.list);
+        mEmptyTextView = (TextView)v.findViewById(android.R.id.empty);
+        mAppVersion = (TextView)v.findViewById(R.id.appVersion);
+        mSwipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.daily_swipe_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.blue, R.color.orange);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -73,6 +68,7 @@ public class Daily_forecast_fragment extends Fragment {
             e.printStackTrace();
         }
         final String version = pInfo.versionName;
+        mDeveloperEmail = (TextView)v.findViewById(R.id.developer_email);
         mDeveloperEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
