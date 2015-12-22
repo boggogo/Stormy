@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, 1000, 1000, new MyLocationListener());
+                    LocationManager.NETWORK_PROVIDER, 0, 0, new MyLocationListener());
 
         } else {
             alertForNoInternet();
