@@ -15,4 +15,7 @@
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_main_activity_material_ui">MainActivityMaterialUI</string>
     <string name="developer_email">Developer:<u>koemdjiev@gmail.com</u>.</string>
+    <string name="no">No</string>
+    <string name="network_not_found_title">Location services not found!</string>
+    <string name="network_not_found_message">There are no location services found. This app uses location services to determine your location and get the weather forecast for the location. Do you want to enable it?</string>
 </resources>

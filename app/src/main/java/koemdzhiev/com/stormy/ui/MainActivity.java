@@ -2,6 +2,8 @@ package koemdzhiev.com.stormy.ui;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,6 +17,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Window;
@@ -43,6 +46,7 @@ import koemdzhiev.com.stormy.weather.Hour;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final int TURN_ON_LOCATION_REQUEST = 1;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
@@ -299,13 +303,40 @@ public class MainActivity extends AppCompatActivity {
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, 0, 0, new MyLocationListener());
+            //check if the if the location services are enabled
+            if( !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                alertForNoLocationEnabled();
+            }else {
+
+                locationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER, 0, 0, new MyLocationListener());
+            }
 
         } else {
             alertForNoInternet();
         }
+    }
 
+    private void alertForNoLocationEnabled() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.network_not_found_title);  // network not found
+        builder.setMessage(R.string.network_not_found_message); // Want to enable?
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int i) {
+                toggleSwipeRefreshLayoutsOff();
+                Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                toggleSwipeRefreshLayoutsOff();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     private class MyLocationListener implements LocationListener {
@@ -367,4 +398,5 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.ColorPrimaryDark));
         }
     }
+
 }
