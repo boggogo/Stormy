@@ -12,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getForecast(double latitude, double longitude) {
+        Log.d(TAG,"getForecast initiated...");
         String API_KEY = "3ed3a1906736c6f6c467606bd1f91e2c";
         String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=auto";
 
@@ -125,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-//                            mCurrent_forecast_fragment.toggleRefresh();
                             toggleSwipeRefreshLayoutsOff();
                         }
                     });
@@ -150,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    Log.d(TAG,"isSuccessful - run on UNI threth (update display)...");
                                   mCurrent_forecast_fragment.updateDisplay();
                                     mHourly_forecast_fragment.setUpHourlyFragment();
                                     mDaily_forecast_fragment.setUpDailyFragment();
@@ -290,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
 
     //------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
     public void getLocation() {
+        Log.d(TAG,"getLocation initiated...");
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (isNetworkAvailable()) {
 //            mCurrent_forecast_fragment.toggleRefresh();
@@ -307,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
             if( !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 alertForNoLocationEnabled();
             }else {
-
+                Log.d(TAG,"getLocation  requestLocationUpdates...");
                 locationManager.requestLocationUpdates(
                         LocationManager.NETWORK_PROVIDER, 0, 0, new MyLocationListener());
             }
@@ -324,10 +327,35 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialogInterface, int i) {
                 toggleSwipeRefreshLayoutsOff();
-                Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        });
+//                code that returns the user when he/she turns location on
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        long fortySecondsFromNow = System.currentTimeMillis() + 40 * 1000;
+                        while ((System.currentTimeMillis() < fortySecondsFromNow)
+                                && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                            try {
+                                Thread.sleep(300);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                            intent.setAction(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                            startActivity(intent);
+                            //Do what u want
+                        }
+
+                    }
+                });
+//                  end of the above code
+                    Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+
+                    startActivity(intent);
+                }
+            });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -343,6 +371,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLocationChanged(Location loc) {
+            Log.d(TAG,"On Location changed initiated...");
             latitude = loc.getLatitude();
             longitude = loc.getLongitude();
             //stop listening to location updates after setting the latitude and lonitude
