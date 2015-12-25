@@ -47,7 +47,6 @@ import koemdzhiev.com.stormy.weather.Hour;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final int TURN_ON_LOCATION_REQUEST = 1;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
@@ -58,11 +57,8 @@ public class MainActivity extends AppCompatActivity {
     Daily_forecast_fragment mDaily_forecast_fragment;
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    public static final String LOCATION_KEY = "location_key";
     public Forecast mForecast;
-    public static final String DAILY_FORECAST = "DAILY_FORECAST";
-    public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
-    //default coordinates - Gotse Delchev, UK Lati:57.156866 ; Long:
+    //initiate coordinates to 0.0
     public double latitude = 0.0;
     public double longitude = 0.0;
     private MyLocationListener locationListner;
