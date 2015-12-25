@@ -15,14 +15,17 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
@@ -63,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
     public double longitude = 0.0;
     private MyLocationListener locationListner;
     private LocationManager locationManager;
-    public boolean isFirstGetLocation = false;
+    public boolean isFirstTimeLaunchingTheApp = false;
+    LinearLayout mainActivityLayout;
 
 
     @Override
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //-----------MY CODE STARTS HERE-----------------
+        mainActivityLayout = (LinearLayout)findViewById(R.id.main_activity_layout);
         changeWindowTopColor();
         this.mCurrent_forecast_fragment = new Current_forecast_fragment();
         this.mHourly_forecast_fragment = new Hourly_forecast_fragment();
@@ -100,6 +105,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
+
+        if(!isFirstTimeLaunchingTheApp){
+            final Snackbar snackbar = Snackbar
+                    .make(mainActivityLayout, "Initial launch may take a bit more to load.", Snackbar.LENGTH_LONG)
+                    .setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    });
+
+            snackbar.show();
+        }
     }
 
     @Override
@@ -117,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (locationManager == null) {
                 getLocation();
-                Log.d(TAG,"OnResume locationManager == null");
+                Log.d(TAG, "OnResume locationManager == null");
             }
     }
 
@@ -424,9 +441,10 @@ public class MainActivity extends AppCompatActivity {
             longitude = loc.getLongitude();
             //check if this is the first time that the app starts
             //if it is not, get the forecast only with the swiperefresh layout
-            if(!isFirstGetLocation)
-            getForecast(latitude, longitude);
-            isFirstGetLocation = true;
+            if(!isFirstTimeLaunchingTheApp) {
+                getForecast(latitude, longitude);
+                isFirstTimeLaunchingTheApp = true;
+            }
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
