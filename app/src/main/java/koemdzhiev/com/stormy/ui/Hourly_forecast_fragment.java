@@ -54,14 +54,22 @@ public class Hourly_forecast_fragment extends Fragment {
                     //if there is internet and if the mSwipeRefreshLayout in the current and daily fragments are not already running...
 
                     if (mActivity.isNetworkAvailable()) {
-                        if (!mActivity.mCurrent_forecast_fragment.mSwipeRefreshLayout.isRefreshing() && !mActivity.mDaily_forecast_fragment.mSwipeRefreshLayout.isRefreshing()) {
-                            mActivity.getLocation();
-                        } else {
+                        if (!mActivity.mDaily_forecast_fragment.mSwipeRefreshLayout.isRefreshing() && !mActivity.mCurrent_forecast_fragment.mSwipeRefreshLayout.isRefreshing()) {
+                            if (mActivity.isLocationServicesEnabled()) {
+                                if (mActivity.latitude != 0.0 && mActivity.longitude != 0.0) {
+                                    mActivity.getForecast(mActivity.latitude, mActivity.longitude);
+                                } else {
+                                    mActivity.getLocation();
+                                }
+                            }else{
+                                mActivity.alertForNoLocationEnabled();
+                            }
+                        }else{
                             mSwipeRefreshLayout.setRefreshing(false);
                             Toast.makeText(mActivity, "currently refreshing...", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(mActivity, "No Internet Connection!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mActivity, "No Internet Connection!", Toast.LENGTH_LONG).show();
                         mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }

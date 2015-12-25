@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[]={"Current","Hourly","Daily"};
-    int Numboftabs =3;
+    CharSequence Titles[] = {"Current", "Hourly", "Daily"};
+    int Numboftabs = 3;
     Current_forecast_fragment mCurrent_forecast_fragment;
     Hourly_forecast_fragment mHourly_forecast_fragment;
     Daily_forecast_fragment mDaily_forecast_fragment;
@@ -63,9 +63,11 @@ public class MainActivity extends AppCompatActivity {
     public static final String DAILY_FORECAST = "DAILY_FORECAST";
     public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
     //default coordinates - Gotse Delchev, UK Lati:57.156866 ; Long:
-    private double latitude = 41.5667;
-    private double longitude = 23.7333;
+    public double latitude = 0.0;
+    public double longitude = 0.0;
+    private MyLocationListener locationListner;
     private LocationManager locationManager;
+    public boolean isFirstGetLocation = false;
 
 
     @Override
@@ -77,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
         this.mCurrent_forecast_fragment = new Current_forecast_fragment();
         this.mHourly_forecast_fragment = new Hourly_forecast_fragment();
         this.mDaily_forecast_fragment = new Daily_forecast_fragment();
-        getLocation();
+        locationListner = new MyLocationListener();
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs,mCurrent_forecast_fragment,
-                mHourly_forecast_fragment,mDaily_forecast_fragment);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager(), Titles, Numboftabs, mCurrent_forecast_fragment,
+                mHourly_forecast_fragment, mDaily_forecast_fragment);
 
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
@@ -96,18 +98,61 @@ public class MainActivity extends AppCompatActivity {
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
-                return ContextCompat.getColor(MainActivity.this,R.color.tabsScrollColor);
+                return ContextCompat.getColor(MainActivity.this, R.color.tabsScrollColor);
             }
         });
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
-
-
     }
 
-    private void getForecast(double latitude, double longitude) {
-        Log.d(TAG,"getForecast initiated...");
+    @Override
+    protected void onResume() {
+        super.onResume();
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            if (locationManager == null) {
+                getLocation();
+                Log.d(TAG,"OnResume locationManager == null");
+            }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getLocation();
+        Log.d(TAG, "onStart getLocation");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        if(locationManager != null) {
+            locationManager.removeUpdates(locationListner);
+            Log.d(TAG,"removeUpdates - onPause()");
+        }
+    }
+
+    public void getForecast(double latitude, double longitude) {
+        Log.d(TAG, "getForecast initiated...");
         String API_KEY = "3ed3a1906736c6f6c467606bd1f91e2c";
         String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=auto";
 
@@ -155,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
                                   mCurrent_forecast_fragment.updateDisplay();
                                     mHourly_forecast_fragment.setUpHourlyFragment();
                                     mDaily_forecast_fragment.setUpDailyFragment();
+                                    toggleSwipeRefreshLayoutsOff();
 
                                 }
                             });
@@ -173,10 +219,11 @@ public class MainActivity extends AppCompatActivity {
             toggleSwipeRefreshLayoutsOff();
 //            Toast.makeText(this,getString(R.string.network_unavailable_message), Toast.LENGTH_LONG).show();
             alertForNoInternet();
+            Log.d(TAG,"Alert No Internet" + 220);
         }
     }
 
-    private void toggleSwipeRefreshLayoutsOff() {
+    public void toggleSwipeRefreshLayoutsOff() {
         mHourly_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
         mCurrent_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
         mDaily_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
@@ -307,20 +354,25 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             //check if the if the location services are enabled
-            if( !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            if( !isLocationServicesEnabled()) {
                 alertForNoLocationEnabled();
             }else {
                 Log.d(TAG,"getLocation  requestLocationUpdates...");
                 locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, 0, 0, new MyLocationListener());
+                        LocationManager.NETWORK_PROVIDER, 0, 0, locationListner);
             }
 
         } else {
             alertForNoInternet();
+            Log.d(TAG, "Alert No Internet" + 366);
         }
     }
 
-    private void alertForNoLocationEnabled() {
+    public boolean isLocationServicesEnabled() {
+        return (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
+    }
+
+    public void alertForNoLocationEnabled() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.network_not_found_title);  // network not found
         builder.setMessage(R.string.network_not_found_message); // Want to enable?
@@ -371,11 +423,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLocationChanged(Location loc) {
-            Log.d(TAG,"On Location changed initiated...");
+            Log.d(TAG,"On Location changed...");
             latitude = loc.getLatitude();
             longitude = loc.getLongitude();
-            //stop listening to location updates after setting the latitude and lonitude
+            //check if this is the first time that the app starts
+            //if it is not, get the forecast only with the swiperefresh layout
+            if(!isFirstGetLocation)
             getForecast(latitude, longitude);
+            isFirstGetLocation = true;
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -386,7 +441,6 @@ public class MainActivity extends AppCompatActivity {
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            locationManager.removeUpdates(this);
         }
 
         @Override

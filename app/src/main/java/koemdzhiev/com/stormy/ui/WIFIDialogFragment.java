@@ -18,7 +18,7 @@ public class WIFIDialogFragment extends DialogFragment {
         Context context = getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
                 .setTitle(R.string.error_title)
-                .setMessage("There is no internet connection!")
+                .setMessage(R.string.error_dialog_message)
                 .setPositiveButton(R.string.error_ok_button_text,null);
 
         AlertDialog dialog = builder.create();
