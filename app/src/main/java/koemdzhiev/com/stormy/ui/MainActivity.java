@@ -106,17 +106,6 @@ public class MainActivity extends AppCompatActivity {
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
 
-        if(!isFirstTimeLaunchingTheApp){
-            final Snackbar snackbar = Snackbar
-                    .make(mainActivityLayout, "Initial launch may take a bit more to load.", Snackbar.LENGTH_LONG)
-                    .setAction("OK", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-
-            snackbar.show();
-        }
     }
 
     @Override
@@ -352,6 +341,17 @@ public class MainActivity extends AppCompatActivity {
 
     //------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
     public void getLocation() {
+        if(!isFirstTimeLaunchingTheApp && isNetworkAvailable()){
+            final Snackbar snackbar = Snackbar
+                    .make(mainActivityLayout, "Initial launch may take a bit more to load.", Snackbar.LENGTH_LONG)
+                    .setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    });
+
+            snackbar.show();
+        }
         Log.d(TAG,"getLocation initiated...");
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (isNetworkAvailable()) {
