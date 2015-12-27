@@ -17,11 +17,13 @@
     <string name="developer_email">Developer:<u>koemdjiev@gmail.com</u>.</string>
     <string name="no">No</string>
     <string name="network_not_found_title">Location services not found!</string>
-    <string name="network_not_found_message">There are no location services found. This app uses location services to determine your location and get the weather forecast for the location. Do you want to enable it?</string>
+    <string name="network_not_found_message">There are no location services found. This app uses the location services to determine your location and get the current weather forecast. Do you want to enable it?</string>
     <string name="current_fragment_location_name">Getting current weather…</string>
     <string name="current_fragment_humidity_label">HUMIDITY</string>
     <string name="current_fragment_wind_speed_label">WIND SPEED</string>
     <string name="current_fragment_rain_label">RAIN?</string>
     <string name="current_fragment_getting_current_weather_label">Getting current weather…</string>
     <string name="error_dialog_message">The app cannot work without internet connection!</string>
+    <string name="server_error_title">Server not responding</string>
+    <string name="no_response_from_server_message">There was no response from the server.Please, try again later.</string>
 </resources>

@@ -15,18 +15,17 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.location.LocationRequest;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -40,6 +39,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.adapters.ViewPagerAdapter;
@@ -47,6 +49,9 @@ import koemdzhiev.com.stormy.weather.Current;
 import koemdzhiev.com.stormy.weather.Day;
 import koemdzhiev.com.stormy.weather.Forecast;
 import koemdzhiev.com.stormy.weather.Hour;
+import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import rx.Subscription;
+import rx.functions.Action1;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -66,15 +71,28 @@ public class MainActivity extends AppCompatActivity {
     public double longitude = 0.0;
     private MyLocationListener locationListner;
     private LocationManager locationManager;
-    public boolean isFirstTimeLaunchingTheApp = false;
+    public boolean isFirstTimeLaunchingTheApp = true;
     LinearLayout mainActivityLayout;
-
+    LocationRequest request;
+    ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+    private ScheduledFuture<?> mScheduledFuture;
+    ReactiveLocationProvider locationProvider;
+    Subscription subscription;
+    Subscription onlyFirstTimeSubscription;
+    NotAbleToGetWeatherDataTask mNotAbleToGetWeatherDataTask = new NotAbleToGetWeatherDataTask();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //-----------MY CODE STARTS HERE-----------------
+        request = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setSmallestDisplacement(1000)
+                .setFastestInterval(10 * 1000)
+                .setInterval(30 * 60 * 1000);
+        locationProvider = new ReactiveLocationProvider(this);
+
         mainActivityLayout = (LinearLayout)findViewById(R.id.main_activity_layout);
         changeWindowTopColor();
         this.mCurrent_forecast_fragment = new Current_forecast_fragment();
@@ -130,8 +148,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        getLocation();
-        Log.d(TAG, "onStart getLocation");
+        if(isFirstTimeLaunchingTheApp) {
+            Log.d(TAG, "onStart getLocation");
+            getLocation();
+        }
     }
 
     @Override
@@ -151,9 +171,30 @@ public class MainActivity extends AppCompatActivity {
             locationManager.removeUpdates(locationListner);
             Log.d(TAG,"removeUpdates - onPause()");
         }
+        //subscribe for background location updates...
+        subscription = locationProvider.getUpdatedLocation(request)
+                .subscribe(new Action1<Location>() {
+                    @Override
+                    public void call(Location location) {
+                        Log.d(TAG, "Getting Background updates...");
+                        MainActivity.this.latitude = location.getLatitude();
+                        MainActivity.this.longitude = location.getLongitude();
+
+                    }
+                });
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "OnDestroy Called!");
+        subscription.unsubscribe();
+        super.onDestroy();
     }
 
     public void getForecast(double latitude, double longitude) {
+        //scedule no response from the server task...
+        mScheduledFuture = exec.schedule(mNotAbleToGetWeatherDataTask,12, TimeUnit.SECONDS);
+
         Log.d(TAG, "getForecast initiated...");
         String API_KEY = "3ed3a1906736c6f6c467606bd1f91e2c";
         String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=auto";
@@ -177,6 +218,10 @@ public class MainActivity extends AppCompatActivity {
                             toggleSwipeRefreshLayoutsOff();
                         }
                     });
+                    //on response from the server cansel the noResponseFromServer task
+//on response from the server cansel the noResponseFromServer task
+                    Log.d(TAG,"OnFailure_ scheduledFuture is CANCELED");
+                    mScheduledFuture.cancel(true);
                     alertUserAboutError();
                 }
 
@@ -186,23 +231,23 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-//                            mCurrent_forecast_fragment.toggleRefresh();
                             toggleSwipeRefreshLayoutsOff();
                         }
                     });
                     try {
                         String jsonData = response.body().string();
-                        //Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
                             mForecast = parseForecastDetails(jsonData);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.d(TAG,"isSuccessful - run on UNI threth (update display)...");
+                                    Log.d(TAG, "isSuccessful - run on UNI threth (update display)...");
                                   mCurrent_forecast_fragment.updateDisplay();
                                     mHourly_forecast_fragment.setUpHourlyFragment();
                                     mDaily_forecast_fragment.setUpDailyFragment();
                                     toggleSwipeRefreshLayoutsOff();
+                                    //set the isFirstTime to true so that the next refresh wont get location
+                                    isFirstTimeLaunchingTheApp = false;
 
                                 }
                             });
@@ -214,14 +259,18 @@ public class MainActivity extends AppCompatActivity {
                     } catch (IOException | JSONException e) {
                         Log.e(TAG, "Exception caught:", e);
                     }
+                    //on response from the server cansel the noResponseFromServer task
+                    Log.d(TAG,"OnResponse_ scheduledFuture is CANCELED");
+                    mScheduledFuture.cancel(true);
                 }
             });
         } else {
-//            mCurrent_forecast_fragment.toggleRefresh();
             toggleSwipeRefreshLayoutsOff();
-//            Toast.makeText(this,getString(R.string.network_unavailable_message), Toast.LENGTH_LONG).show();
             alertForNoInternet();
             Log.d(TAG,"Alert No Internet" + 220);
+            //is there is no internet cancel the noResponseFromServer task
+            Log.d(TAG,"No internet _ scheduledFuture is CANCELED");
+            mScheduledFuture.cancel(true);
         }
     }
 
@@ -341,38 +390,36 @@ public class MainActivity extends AppCompatActivity {
 
     //------------------------- MY EXTERNAL CODE BELLOW-------------------------------------------
     public void getLocation() {
-        if(!isFirstTimeLaunchingTheApp && isNetworkAvailable()){
-            final Snackbar snackbar = Snackbar
-                    .make(mainActivityLayout, "Initial launch may take a bit more to load.", Snackbar.LENGTH_LONG)
-                    .setAction("OK", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-
-            snackbar.show();
-        }
         Log.d(TAG,"getLocation initiated...");
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (isNetworkAvailable()) {
-//            mCurrent_forecast_fragment.toggleRefresh();
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
             //check if the if the location services are enabled
             if( !isLocationServicesEnabled()) {
                 alertForNoLocationEnabled();
             }else {
-                Log.d(TAG,"getLocation  requestLocationUpdates...");
-                locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, 0, 0, locationListner);
+//                Log.d(TAG,"getLocation  requestLocationUpdates...");
+//                locationManager.requestLocationUpdates(
+//                        LocationManager.NETWORK_PROVIDER, 0, 0, locationListner);
+                  LocationRequest oneTimeOnStartRequest = LocationRequest.create() //standard GMS LocationRequest
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setNumUpdates(1)
+                        .setInterval(0);
+                 onlyFirstTimeSubscription = locationProvider.getUpdatedLocation(oneTimeOnStartRequest)
+                .subscribe(new Action1<Location>() {
+                    @Override
+                    public void call(Location location) {
+                        Log.d(TAG, "Getting first location updates...");
+                        MainActivity.this.latitude = location.getLatitude();
+                        MainActivity.this.longitude = location.getLongitude();
+
+                        if(isFirstTimeLaunchingTheApp) {
+                            getForecast(latitude, longitude);
+                        }
+
+                        onlyFirstTimeSubscription.unsubscribe();
+
+                    }
+                });
             }
 
         } else {
@@ -441,9 +488,8 @@ public class MainActivity extends AppCompatActivity {
             longitude = loc.getLongitude();
             //check if this is the first time that the app starts
             //if it is not, get the forecast only with the swiperefresh layout
-            if(!isFirstTimeLaunchingTheApp) {
+            if(isFirstTimeLaunchingTheApp) {
                 getForecast(latitude, longitude);
-                isFirstTimeLaunchingTheApp = true;
             }
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -495,5 +541,24 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.ColorPrimaryDark));
         }
     }
+
+    class NotAbleToGetWeatherDataTask implements Runnable {
+
+        @Override
+        public void run() {
+            alertForServerError();
+            toggleSwipeRefreshLayoutsOff();
+        }
+    }
+
+    private void alertForServerError(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.server_error_title);
+        builder.setMessage(R.string.no_response_from_server_message);
+        builder.setPositiveButton("OK", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
 }

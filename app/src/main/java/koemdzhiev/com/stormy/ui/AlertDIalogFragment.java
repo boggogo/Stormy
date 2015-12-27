@@ -23,4 +23,9 @@ public class AlertDIalogFragment extends DialogFragment {
         AlertDialog dialog = builder.create();
         return dialog;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+    }
 }

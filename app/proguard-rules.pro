@@ -27,6 +27,6 @@
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
 -keep class **$$ViewInjector { *; }
-
+-dontwarn sun.misc.Unsafe
 -keep class okio.** { *; }
 -dontwarn okio.**
