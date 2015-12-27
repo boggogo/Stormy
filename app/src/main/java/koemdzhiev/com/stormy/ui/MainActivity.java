@@ -525,7 +525,9 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 if(addressList.size() > 0){
                     Log.v(MainActivity.class.getSimpleName(), addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName() + "");
-                    mCurrent_forecast_fragment.mLocationLabel.setText(addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName());
+                    String cityName = addressList.get(0).getLocality();
+                    String countryName  = addressList.get(0).getCountryName();
+                    mCurrent_forecast_fragment.mLocationLabel.setText(getString(R.string.location_name,cityName,countryName));
                 }
             }
         } catch (IOException e) {

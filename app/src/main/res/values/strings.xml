@@ -26,4 +26,5 @@
     <string name="error_dialog_message">The app cannot work without internet connection!</string>
     <string name="server_error_title">Server not responding</string>
     <string name="no_response_from_server_message">There was no response from the server.Please, try again later.</string>
+    <string name="location_name">%1$s, %2$s</string>
 </resources>
