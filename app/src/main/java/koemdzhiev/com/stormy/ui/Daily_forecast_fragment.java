@@ -87,7 +87,21 @@ public class Daily_forecast_fragment extends Fragment {
             }
         });
 
-        mAppVersion.setText("v "+version);
+        mAppVersion.setText("v " + version);
+        mAppVersion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mActivity, "Number of background updates: " + mActivity.numOfBackgroundUpdates, Toast.LENGTH_LONG).show();
+            }
+        });
+        mAppVersion.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mActivity.numOfBackgroundUpdates = 0;
+                Toast.makeText(mActivity,"numberOfUpdates reseted to 0",Toast.LENGTH_LONG).show();
+                return true;
+            }
+        });
         return v;
     }
 

@@ -1,21 +1,17 @@
 package koemdzhiev.com.stormy.ui;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -69,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     //initiate coordinates to 0.0
     public double latitude = 0.0;
     public double longitude = 0.0;
-    private MyLocationListener locationListner;
     private LocationManager locationManager;
     public boolean isFirstTimeLaunchingTheApp = true;
     LinearLayout mainActivityLayout;
@@ -80,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     Subscription subscription;
     Subscription onlyFirstTimeSubscription;
     NotAbleToGetWeatherDataTask mNotAbleToGetWeatherDataTask = new NotAbleToGetWeatherDataTask();
+    int numOfBackgroundUpdates = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         this.mCurrent_forecast_fragment = new Current_forecast_fragment();
         this.mHourly_forecast_fragment = new Hourly_forecast_fragment();
         this.mDaily_forecast_fragment = new Daily_forecast_fragment();
-        locationListner = new MyLocationListener();
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter = new ViewPagerAdapter(getSupportFragmentManager(), Titles, Numboftabs, mCurrent_forecast_fragment,
@@ -124,54 +119,18 @@ public class MainActivity extends AppCompatActivity {
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            if (locationManager == null) {
-                getLocation();
-                Log.d(TAG, "OnResume locationManager == null");
-            }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         if(isFirstTimeLaunchingTheApp) {
-            Log.d(TAG, "onStart getLocation");
+            Log.d(TAG, "onCreate getLocation");
             getLocation();
         }
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        if(locationManager != null) {
-            locationManager.removeUpdates(locationListner);
-            Log.d(TAG,"removeUpdates - onPause()");
-        }
         //subscribe for background location updates...
+
         subscription = locationProvider.getUpdatedLocation(request)
                 .subscribe(new Action1<Location>() {
                     @Override
@@ -179,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "Getting Background updates...");
                         MainActivity.this.latitude = location.getLatitude();
                         MainActivity.this.longitude = location.getLongitude();
+                        numOfBackgroundUpdates++;
 
                     }
                 });
@@ -267,9 +227,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             toggleSwipeRefreshLayoutsOff();
             alertForNoInternet();
-            Log.d(TAG,"Alert No Internet" + 220);
+            Log.d(TAG, "Alert No Internet" + 220);
             //is there is no internet cancel the noResponseFromServer task
-            Log.d(TAG,"No internet _ scheduledFuture is CANCELED");
+            Log.d(TAG, "No internet _ scheduledFuture is CANCELED");
             mScheduledFuture.cancel(true);
         }
     }
@@ -397,10 +357,7 @@ public class MainActivity extends AppCompatActivity {
             if( !isLocationServicesEnabled()) {
                 alertForNoLocationEnabled();
             }else {
-//                Log.d(TAG,"getLocation  requestLocationUpdates...");
-//                locationManager.requestLocationUpdates(
-//                        LocationManager.NETWORK_PROVIDER, 0, 0, locationListner);
-                  LocationRequest oneTimeOnStartRequest = LocationRequest.create() //standard GMS LocationRequest
+                  LocationRequest oneTimeOnStartRequest = LocationRequest.create()
                         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                         .setNumUpdates(1)
                         .setInterval(0);
@@ -479,39 +436,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private class MyLocationListener implements LocationListener {
-
-        @Override
-        public void onLocationChanged(Location loc) {
-            Log.d(TAG,"On Location changed...");
-            latitude = loc.getLatitude();
-            longitude = loc.getLongitude();
-            //check if this is the first time that the app starts
-            //if it is not, get the forecast only with the swiperefresh layout
-            if(isFirstTimeLaunchingTheApp) {
-                getForecast(latitude, longitude);
-            }
-            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {}
-
-        @Override
-        public void onProviderEnabled(String provider) {}
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {}
-    }
 
     //external my method...
     public void getLocationName(){
