@@ -85,10 +85,21 @@ public class MainActivity extends AppCompatActivity {
         request = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                 .setSmallestDisplacement(1000)
-                .setFastestInterval(10 * 1000)
-                .setInterval(30 * 60 * 1000);
+                .setFastestInterval(10 * 60 * 1000)
+                .setInterval(60 * 60 * 1000);
         locationProvider = new ReactiveLocationProvider(this);
+        //subscribe for background location updates...
+        subscription = locationProvider.getUpdatedLocation(request)
+                .subscribe(new Action1<Location>() {
+                    @Override
+                    public void call(Location location) {
+                        Log.d(TAG, "Getting Background updates...");
+                        MainActivity.this.latitude = location.getLatitude();
+                        MainActivity.this.longitude = location.getLongitude();
+                        numOfBackgroundUpdates++;
 
+                    }
+                });
         mainActivityLayout = (LinearLayout)findViewById(R.id.main_activity_layout);
         changeWindowTopColor();
         this.mCurrent_forecast_fragment = new Current_forecast_fragment();
@@ -125,24 +136,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //subscribe for background location updates...
-
-        subscription = locationProvider.getUpdatedLocation(request)
-                .subscribe(new Action1<Location>() {
-                    @Override
-                    public void call(Location location) {
-                        Log.d(TAG, "Getting Background updates...");
-                        MainActivity.this.latitude = location.getLatitude();
-                        MainActivity.this.longitude = location.getLongitude();
-                        numOfBackgroundUpdates++;
-
-                    }
-                });
-    }
 
     @Override
     protected void onDestroy() {
