@@ -12,6 +12,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -35,6 +36,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +54,7 @@ import rx.functions.Action1;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static ExecutorService THREADPOOL;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
@@ -76,12 +80,15 @@ public class MainActivity extends AppCompatActivity {
     Subscription onlyFirstTimeSubscription;
     NotAbleToGetWeatherDataTask mNotAbleToGetWeatherDataTask = new NotAbleToGetWeatherDataTask();
     int numOfBackgroundUpdates = 0;
+    String locationName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //-----------MY CODE STARTS HERE-----------------
+        THREADPOOL = Executors.newCachedThreadPool();
+
         request = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                 .setSmallestDisplacement(1000)
@@ -98,6 +105,12 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.longitude = location.getLongitude();
                         numOfBackgroundUpdates++;
 
+                        Runnable task = new Runnable(){
+                            public void run() {
+                                getLocationName();
+                            }
+                        };
+                        runButNotOn(task, Looper.getMainLooper().getThread());
                     }
                 });
         mainActivityLayout = (LinearLayout)findViewById(R.id.main_activity_layout);
@@ -141,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         Log.d(TAG, "OnDestroy Called!");
         subscription.unsubscribe();
+        //cancel any left tasks to be done now...
+        THREADPOOL.shutdownNow();
         super.onDestroy();
     }
 
@@ -362,6 +377,14 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.latitude = location.getLatitude();
                         MainActivity.this.longitude = location.getLongitude();
 
+                        //create and run getLocationName on a different thread
+                        Runnable task = new Runnable(){
+                            public void run() {
+                                getLocationName();
+                            }
+                        };
+                        runButNotOn(task, Looper.getMainLooper().getThread());
+
                         if(isFirstTimeLaunchingTheApp) {
                             getForecast(latitude, longitude);
                         }
@@ -432,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
 
     //external my method...
     public void getLocationName(){
-        Log.i(TAG,"Lattitude: " + latitude + " | " + "Longitude" + longitude);
+        Log.i(TAG,"Latitude: " + latitude + " | " + "Longitude" + longitude);
         Geocoder geo = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addressList = geo.getFromLocation(this.latitude,this.longitude,1);
@@ -444,7 +467,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.v(MainActivity.class.getSimpleName(), addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName() + "");
                     String cityName = addressList.get(0).getLocality();
                     String countryName  = addressList.get(0).getCountryName();
-                    mCurrent_forecast_fragment.mLocationLabel.setText(getString(R.string.location_name,cityName,countryName));
+//                    mCurrent_forecast_fragment.mLocationLabel.setText(getString(R.string.location_name,cityName,countryName));
+                    locationName = getString(R.string.location_name,cityName,countryName);
                 }
             }
         } catch (IOException e) {
@@ -479,5 +503,13 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+
+    public static void runButNotOn(Runnable toRun, Thread notOn) {
+        if (Thread.currentThread() == notOn) {
+            THREADPOOL.submit(toRun);
+        } else {
+            toRun.run();
+        }
+    }
 
 }

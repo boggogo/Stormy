@@ -81,6 +81,8 @@ public class Hourly_forecast_fragment extends Fragment {
     public void setUpHourlyFragment(){
         if (mActivity.mForecast != null) {
 //            Toast.makeText(mActivity, getString(R.string.network_unavailable_message), Toast.LENGTH_LONG).show();
+            //set to null to reset the old one and set a new adapter bellow...
+            mListView.setAdapter(null);
             Hour[] hourlyForecast = mActivity.mForecast.getHourlyForecast();
             mHours = Arrays.copyOf(hourlyForecast, hourlyForecast.length, Hour[].class);
 
@@ -91,9 +93,9 @@ public class Hourly_forecast_fragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                     Hour h = mHours[position];
-                    String time = mActivity.mCurrent_forecast_fragment.mTimeLabel.getText().toString();
-                    String temperature = mActivity.mCurrent_forecast_fragment.mTemperatureLabel.getText().toString();
-                    String summary = mActivity.mCurrent_forecast_fragment.mSummaryLabel.getText().toString();
+                    String time = h.getHour();
+                    String temperature = h.getTemperature()+"";
+                    String summary = h.getSummary();
                     String message = String.format("At %s it will be %s and %s",time,temperature,summary);
                     Toast.makeText(mActivity, message, Toast.LENGTH_LONG).show();
                     //play animations

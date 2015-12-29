@@ -113,7 +113,8 @@ public class Daily_forecast_fragment extends Fragment {
     }
 
     public void setUpDailyFragment(){
-
+//set to null to reset the old one and set a new adapter bellow...
+        mListView.setAdapter(null);
         Day[] myDayArr = mActivity.mForecast.getDailyForecast();
         mDays = Arrays.copyOf(myDayArr, myDayArr.length, Day[].class);
 
