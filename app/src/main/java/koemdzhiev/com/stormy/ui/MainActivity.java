@@ -3,6 +3,7 @@ package koemdzhiev.com.stormy.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -81,12 +82,22 @@ public class MainActivity extends AppCompatActivity {
     NotAbleToGetWeatherDataTask mNotAbleToGetWeatherDataTask = new NotAbleToGetWeatherDataTask();
     int numOfBackgroundUpdates = 0;
     String locationName = "";
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //-----------MY CODE STARTS HERE-----------------
+        //check if the user previously has seen the whats new message...
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+        if (sharedPref.getInt(getString(R.string.saved_if_whats_new_seen), 1) != 0){
+            WhatsNewDialogCreator dialogCreator = new WhatsNewDialogCreator(this, sharedPref);
+            dialogCreator.show();
+        }
+
         THREADPOOL = Executors.newCachedThreadPool();
 
         request = LocationRequest.create()
