@@ -174,6 +174,12 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+//dont kill the app on backpressed
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
     public void getForecast(double latitude, double longitude) {
         //scedule no response from the server task...
         mScheduledFuture = exec.schedule(mNotAbleToGetWeatherDataTask,12, TimeUnit.SECONDS);
