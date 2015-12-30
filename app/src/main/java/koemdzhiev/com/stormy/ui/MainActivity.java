@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         request = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(1000)
+                .setSmallestDisplacement(900)
                 .setFastestInterval(1 * 60 * 1000)
                 .setInterval(60 * 60 * 1000);
         locationProvider = new ReactiveLocationProvider(this);
@@ -352,7 +352,10 @@ public class MainActivity extends AppCompatActivity {
         mCurrent.setSummery(currently.getString("summary"));
         mCurrent.setTemperature(currently.getDouble("temperature"));
         mCurrent.setTimeZone(timezone);
-        mCurrent.setWindSpeed(currently.getDouble("windSpeed"));
+        //convert the meters per second to km per hour
+        double windSpeedInKMPH = Math.round(currently.getDouble("windSpeed") * 3.6);
+        mCurrent.setWindSpeed(windSpeedInKMPH);
+        Log.d(TAG,"Wind speed: " + windSpeedInKMPH);
 
         Log.d(TAG, mCurrent.getFormattedTime());
         return mCurrent;
@@ -490,9 +493,17 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onNext(List<Address> addresses) {
                         if(addresses.size() > 0) {
-                            Log.v(MainActivity.class.getSimpleName(), addresses.get(0).getLocality() + ", " + addresses.get(0).getCountryName() + "");
-                            String cityName = addresses.get(0).getLocality();
-                            String countryName = addresses.get(0).getCountryName();
+                            Address address = addresses.get(0);
+                            Log.v(MainActivity.class.getSimpleName(),"Locality: "+address.getLocality() + ", CountryName " + address.getCountryName());
+                            //check if cityName is null...
+                            String cityName = "unknown";
+                            if(address.getLocality() != null) {
+                                cityName = address.getLocality();
+                                //if it is, try to get the subAdmin Area instead...
+                            }else if (address.getSubAdminArea() != null){
+                                cityName = address.getSubAdminArea();
+                            }
+                            String countryName = address.getCountryName();
                             locationName = getString(R.string.location_name, cityName, countryName);
                         }
                     }
