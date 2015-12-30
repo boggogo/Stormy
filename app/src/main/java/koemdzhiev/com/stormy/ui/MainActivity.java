@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
         request = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(800)
-                .setFastestInterval(5 * 60 * 1000)
+                .setSmallestDisplacement(1000)
+                .setFastestInterval(1 * 60 * 1000)
                 .setInterval(60 * 60 * 1000);
         locationProvider = new ReactiveLocationProvider(this);
         //subscribe for background location updates...
