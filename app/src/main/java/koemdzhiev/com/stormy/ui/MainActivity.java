@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -13,7 +12,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -36,9 +34,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -50,12 +45,15 @@ import koemdzhiev.com.stormy.weather.Day;
 import koemdzhiev.com.stormy.weather.Forecast;
 import koemdzhiev.com.stormy.weather.Hour;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static ExecutorService THREADPOOL;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
@@ -77,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
     private ScheduledFuture<?> mScheduledFuture;
     ReactiveLocationProvider locationProvider;
+    Observable<List<Address>> reverseGeocodeObservable;
     Subscription subscription;
     Subscription onlyFirstTimeSubscription;
     NotAbleToGetWeatherDataTask mNotAbleToGetWeatherDataTask = new NotAbleToGetWeatherDataTask();
@@ -98,32 +97,38 @@ public class MainActivity extends AppCompatActivity {
             dialogCreator.show();
         }
 
-        THREADPOOL = Executors.newCachedThreadPool();
-
         request = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(1000)
-                .setFastestInterval(10 * 60 * 1000)
+                .setSmallestDisplacement(800)
+                .setFastestInterval(5 * 60 * 1000)
                 .setInterval(60 * 60 * 1000);
         locationProvider = new ReactiveLocationProvider(this);
         //subscribe for background location updates...
         subscription = locationProvider.getUpdatedLocation(request)
-                .subscribe(new Action1<Location>() {
+                .subscribe(new Subscriber<Location>() {
                     @Override
-                    public void call(Location location) {
+                    public void onNext(Location location) { /*Handle the location updates*/
                         Log.d(TAG, "Getting Background updates...");
                         MainActivity.this.latitude = location.getLatitude();
                         MainActivity.this.longitude = location.getLongitude();
                         numOfBackgroundUpdates++;
 
-                        Runnable task = new Runnable(){
-                            public void run() {
-                                getLocationName();
-                            }
-                        };
-                        runButNotOn(task, Looper.getMainLooper().getThread());
+                        reverseGeocodeObservable = locationProvider
+                                .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
+                        getLocationName();
+
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG,"OnError Background updates");
                     }
                 });
+
         mainActivityLayout = (LinearLayout)findViewById(R.id.main_activity_layout);
         changeWindowTopColor();
         this.mCurrent_forecast_fragment = new Current_forecast_fragment();
@@ -166,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "OnDestroy Called!");
         subscription.unsubscribe();
         //cancel any left tasks to be done now...
-        THREADPOOL.shutdownNow();
         super.onDestroy();
     }
 
@@ -388,15 +392,11 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.latitude = location.getLatitude();
                         MainActivity.this.longitude = location.getLongitude();
 
-                        //create and run getLocationName on a different thread
-                        Runnable task = new Runnable(){
-                            public void run() {
-                                getLocationName();
-                            }
-                        };
-                        runButNotOn(task, Looper.getMainLooper().getThread());
-
-                        if(isFirstTimeLaunchingTheApp) {
+                        reverseGeocodeObservable = locationProvider
+                                .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
+                        getLocationName();
+                        //check, only on create get location calls getForecast...
+                        if (isFirstTimeLaunchingTheApp) {
                             getForecast(latitude, longitude);
                         }
 
@@ -404,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+
             }
 
         } else {
@@ -466,27 +467,31 @@ public class MainActivity extends AppCompatActivity {
 
     //external my method...
     public void getLocationName(){
-        Log.i(TAG,"Latitude: " + latitude + " | " + "Longitude" + longitude);
-        Geocoder geo = new Geocoder(this, Locale.getDefault());
-        try {
-            List<Address> addressList = geo.getFromLocation(this.latitude,this.longitude,1);
-            if (addressList.isEmpty()){
-                //gets the default name from the timeZone
-                //that we set in as a local variable
-            }else{
-                if(addressList.size() > 0){
-                    Log.v(MainActivity.class.getSimpleName(), addressList.get(0).getLocality() + ", " + addressList.get(0).getCountryName() + "");
-                    String cityName = addressList.get(0).getLocality();
-                    String countryName  = addressList.get(0).getCountryName();
-//                    mCurrent_forecast_fragment.mLocationLabel.setText(getString(R.string.location_name,cityName,countryName));
-                    locationName = getString(R.string.location_name,cityName,countryName);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        reverseGeocodeObservable
+                .subscribeOn(Schedulers.io())               // use I/O thread to query for addresses
+                .observeOn(AndroidSchedulers.mainThread())// return result in main android thread to manipulate UI
+                .subscribe(new Subscriber<List<Address>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG,"OnError Geocode");
+                    }
+
+                    @Override
+                    public void onNext(List<Address> addresses) {
+                        if(addresses.size() > 0) {
+                            Log.v(MainActivity.class.getSimpleName(), addresses.get(0).getLocality() + ", " + addresses.get(0).getCountryName() + "");
+                            String cityName = addresses.get(0).getLocality();
+                            String countryName = addresses.get(0).getCountryName();
+                            locationName = getString(R.string.location_name, cityName, countryName);
+                        }
+                    }
+                });
     }
-    //
 
     private void changeWindowTopColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -512,15 +517,6 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", null);
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-
-    public static void runButNotOn(Runnable toRun, Thread notOn) {
-        if (Thread.currentThread() == notOn) {
-            THREADPOOL.submit(toRun);
-        } else {
-            toRun.run();
-        }
     }
 
 }

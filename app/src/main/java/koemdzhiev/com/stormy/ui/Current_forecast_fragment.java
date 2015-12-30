@@ -109,7 +109,6 @@ public class Current_forecast_fragment extends Fragment {
         mSummaryLabel.setText(current.getSummery());
         mWindSpeedValue.setText(current.getWindSpeed() + "");
         mLocationLabel.setText(current.getTimeZone());
-//        mActivity.getLocationName();
         mLocationLabel.setText(mActivity.locationName);
         Drawable drawable = ContextCompat.getDrawable(mActivity, current.getIconId());
         mIconImageView.setImageDrawable(drawable);
