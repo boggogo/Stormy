@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
         mCurrent.setTimeZone(timezone);
         //convert the meters per second to km per hour and round up to 2 decimal places...
         NumberFormat formatter = new DecimalFormat("#0.00");
-        double windSpeedInKMPH = Double.valueOf(String.format("%.2f", currently.getDouble("windSpeed") * 3.6));
+        double windSpeedInKMPH = Math.round(currently.getDouble("windSpeed") * 3.6);
         mCurrent.setWindSpeed(windSpeedInKMPH);
         Log.d(TAG, "Wind speed: " + windSpeedInKMPH);
         mCurrent.setFeelsLike(currently.getDouble("apparentTemperature"));
