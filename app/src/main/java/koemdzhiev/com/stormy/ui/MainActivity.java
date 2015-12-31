@@ -33,6 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -352,11 +354,12 @@ public class MainActivity extends AppCompatActivity {
         mCurrent.setSummery(currently.getString("summary"));
         mCurrent.setTemperature(currently.getDouble("temperature"));
         mCurrent.setTimeZone(timezone);
-        //convert the meters per second to km per hour
-        double windSpeedInKMPH = Math.round(currently.getDouble("windSpeed") * 3.6);
+        //convert the meters per second to km per hour and round up to 2 decimal places...
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        double windSpeedInKMPH = Double.valueOf(String.format("%.2f", currently.getDouble("windSpeed") * 3.6));
         mCurrent.setWindSpeed(windSpeedInKMPH);
-        Log.d(TAG,"Wind speed: " + windSpeedInKMPH);
-
+        Log.d(TAG, "Wind speed: " + windSpeedInKMPH);
+        mCurrent.setFeelsLike(currently.getDouble("apparentTemperature"));
         Log.d(TAG, mCurrent.getFormattedTime());
         return mCurrent;
     }

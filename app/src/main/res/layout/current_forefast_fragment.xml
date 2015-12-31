@@ -171,6 +171,33 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="46dp"/>
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_centerHorizontal="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Feels like: --"
+            android:textSize="12sp"
+            android:textColor="#60ffffff"
+            android:id="@+id/feels_like_label"
+            android:layout_centerHorizontal="true"/>
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="2dp"
+            android:id="@+id/degreeImageViewFeelsLike"
+            android:src="@mipmap/degree"
+            android:layout_alignTop="@+id/feels_like_label"
+            android:layout_toRightOf="@+id/feels_like_label"
+            android:layout_toEndOf="@+id/feels_like_label"/>
+    </RelativeLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/current_swipe_refresh_layout"
         android:layout_width="match_parent"

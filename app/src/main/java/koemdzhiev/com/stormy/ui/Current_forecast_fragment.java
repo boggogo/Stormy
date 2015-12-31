@@ -32,6 +32,7 @@ public class Current_forecast_fragment extends Fragment {
     TextView mSummaryLabel;
     TextView mLocationLabel;
     TextView mWindSpeedValue;
+    TextView mFeelsLike;
     ImageView mIconImageView;
     ImageView mDegreeImageView;
     public SwipeRefreshLayout mSwipeRefreshLayout;
@@ -54,6 +55,7 @@ public class Current_forecast_fragment extends Fragment {
         mSummaryLabel = (TextView)v.findViewById(R.id.summaryLabel);
         mLocationLabel = (TextView)v.findViewById(R.id.locationLabel);
         mWindSpeedValue = (TextView)v.findViewById(R.id.windSpeedValue);
+        mFeelsLike = (TextView)v.findViewById(R.id.feels_like_label);
         mIconImageView = (ImageView)v.findViewById(R.id.iconImageView);
         mDegreeImageView = (ImageView)v.findViewById(R.id.degreeImageView);
         mSwipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.current_swipe_refresh_layout);
@@ -108,7 +110,7 @@ public class Current_forecast_fragment extends Fragment {
         mPrecipValue.setText(current.getPrecipChange() + "%");
         mSummaryLabel.setText(current.getSummery());
         mWindSpeedValue.setText(current.getWindSpeed() + "");
-        mLocationLabel.setText(current.getTimeZone());
+        mFeelsLike.setText("Feels like: "+current.getFeelsLike());
         mLocationLabel.setText(mActivity.locationName);
         Drawable drawable = ContextCompat.getDrawable(mActivity, current.getIconId());
         mIconImageView.setImageDrawable(drawable);
@@ -120,6 +122,7 @@ public class Current_forecast_fragment extends Fragment {
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mSummaryLabel);
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mHumidityValue);
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mWindSpeedValue);
+        YoYo.with(Techniques.FadeIn).duration(200).playOn(mFeelsLike);
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mPrecipValue);
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mTimeLabel);
 

@@ -17,6 +17,7 @@ public class Current {
     private String mTimeZone;
     private double mWindSpeed;
     private String locationName;
+    private double mFeelsLike;
 
     public String getLocationName() {
         return locationName;
@@ -106,5 +107,11 @@ public class Current {
         mSummery = summery;
     }
 
+    public double getFeelsLike() {
+        return mFeelsLike;
+    }
 
+    public void setFeelsLike(double feelsLike) {
+        mFeelsLike = feelsLike;
+    }
 }
