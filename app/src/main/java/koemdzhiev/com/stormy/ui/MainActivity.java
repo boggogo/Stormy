@@ -266,9 +266,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void toggleSwipeRefreshLayoutsOff() {
-        mHourly_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
-        mCurrent_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
-        mDaily_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
+        if(mHourly_forecast_fragment.mSwipeRefreshLayout != null && mCurrent_forecast_fragment.mSwipeRefreshLayout !=null && mDaily_forecast_fragment.mSwipeRefreshLayout !=null) {
+            mHourly_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
+            mCurrent_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
+            mDaily_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     public void alertForNoInternet() {

@@ -28,4 +28,5 @@
     <string name="no_response_from_server_message">There was no response from the server.Please, try again later.</string>
     <string name="location_name">%1$s, %2$s</string>
     <string name="saved_if_whats_new_seen">if whats new seen</string>
+    <string name="daily_today_text">Today</string>
 </resources>

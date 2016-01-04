@@ -60,7 +60,7 @@ public class DayAdapter extends BaseAdapter {
         holder.temperatureLabel.setText(day.getTemperatureMax() + "");
 
         if(position == 0){
-            holder.dayLabel.setText("Today");
+            holder.dayLabel.setText(R.string.daily_today_text);
         }else {
             holder.dayLabel.setText(day.getDayOfTheWeek());
         }
