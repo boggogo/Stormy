@@ -105,7 +105,7 @@ public class Current_forecast_fragment extends Fragment {
         Current current = mActivity.mForecast.getCurrent();
         //setting the current weather details to the ui
         mTemperatureLabel.setText(current.getTemperature() + "");
-        mTimeLabel.setText("At " + current.getFormattedTime() + " it will be");
+        mTimeLabel.setText("At " + current.getFormattedTime() + " it is");
         mHumidityValue.setText(current.getHumidity() + "%");
         mPrecipValue.setText(current.getPrecipChange() + "%");
         mSummaryLabel.setText(current.getSummery());

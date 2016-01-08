@@ -33,8 +33,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -188,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "getForecast initiated...");
         String API_KEY = "3ed3a1906736c6f6c467606bd1f91e2c";
-        String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=auto";
+        String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=si";
 
         if (isNetworkAvailable()) {
 //            mCurrent_forecast_fragment.toggleRefresh();
@@ -357,11 +355,10 @@ public class MainActivity extends AppCompatActivity {
         mCurrent.setTemperature(currently.getDouble("temperature"));
         mCurrent.setTimeZone(timezone);
         //convert the meters per second to km per hour and round up to 2 decimal places...
-        NumberFormat formatter = new DecimalFormat("#0.00");
         double windSpeedInKMPH = Math.round(currently.getDouble("windSpeed") * 3.6);
         mCurrent.setWindSpeed(windSpeedInKMPH);
         Log.d(TAG, "Wind speed: " + windSpeedInKMPH);
-        mCurrent.setFeelsLike(currently.getDouble("apparentTemperature"));
+        mCurrent.setFeelsLike(Math.round(currently.getDouble("apparentTemperature")));
         Log.d(TAG, mCurrent.getFormattedTime());
         return mCurrent;
     }
