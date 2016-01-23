@@ -26,6 +26,7 @@ import koemdzhiev.com.stormy.weather.Hour;
  * Created by koemdzhiev on 14/12/15.
  */
 public class Hourly_forecast_fragment extends Fragment {
+    private static final String TAG = "MainActivity";
     private Hour[] mHours;
     private MainActivity mActivity;
     public SwipeRefreshLayout mSwipeRefreshLayout;
@@ -42,67 +43,86 @@ public class Hourly_forecast_fragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v =inflater.inflate(R.layout.hourly_forecast_fragment,container,false);
-        mEmptyTextView = (TextView)v.findViewById(android.R.id.empty);
-        mListView = (ListView)v.findViewById(android.R.id.list);
-        mSwipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.hourly_swipe_refresh_layout);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.green,R.color.blue,R.color.orange);
-            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    //if there is internet and if the mSwipeRefreshLayout in the current and daily fragments are not already running...
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "OnResume - Hourly Fragment called");
+        mActivity = ((MainActivity) getActivity());
+    }
 
-                    if (mActivity.isNetworkAvailable()) {
-                        if (!mActivity.mDaily_forecast_fragment.mSwipeRefreshLayout.isRefreshing() && !mActivity.mCurrent_forecast_fragment.mSwipeRefreshLayout.isRefreshing()) {
-                            if (mActivity.isLocationServicesEnabled()) {
-                                if (mActivity.latitude != 0.0 && mActivity.longitude != 0.0) {
-                                    mActivity.getForecast(mActivity.latitude, mActivity.longitude);
-                                } else {
-                                    mActivity.getLocation();
-                                }
-                            }else{
-                                mActivity.alertForNoLocationEnabled();
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.hourly_forecast_fragment, container, false);
+        mEmptyTextView = (TextView) v.findViewById(android.R.id.empty);
+        mListView = (ListView) v.findViewById(android.R.id.list);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.hourly_swipe_refresh_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.blue, R.color.orange);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //if there is internet and if the mSwipeRefreshLayout in the current and daily fragments are not already running...
+
+                if (mActivity.isNetworkAvailable()) {
+                    if (!mActivity.mDaily_forecast_fragment.mSwipeRefreshLayout.isRefreshing() && !mActivity.mCurrent_forecast_fragment.mSwipeRefreshLayout.isRefreshing()) {
+                        if (mActivity.isLocationServicesEnabled()) {
+                            if (mActivity.latitude != 0.0 && mActivity.longitude != 0.0) {
+                                mActivity.getForecast(mActivity.latitude, mActivity.longitude);
+                            } else {
+                                mActivity.getLocation();
                             }
-                        }else{
-                            mSwipeRefreshLayout.setRefreshing(false);
-                            Toast.makeText(mActivity, "currently refreshing...", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mActivity.alertForNoLocationEnabled();
                         }
                     } else {
-                        Toast.makeText(mActivity, "No Internet Connection!", Toast.LENGTH_LONG).show();
                         mSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(mActivity, "currently refreshing...", Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    Toast.makeText(mActivity, "No Internet Connection!", Toast.LENGTH_LONG).show();
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
-            });
+            }
+        });
         Log.e("Forecast_fragment", "onCreateView");
         return v;
     }
 
-    public void setUpHourlyFragment(){
-        if (mActivity.mForecast != null) {
-//            Toast.makeText(mActivity, getString(R.string.network_unavailable_message), Toast.LENGTH_LONG).show();
-            //set to null to reset the old one and set a new adapter bellow...
-            mListView.setAdapter(null);
-            Hour[] hourlyForecast = mActivity.mForecast.getHourlyForecast();
-            mHours = Arrays.copyOf(hourlyForecast, hourlyForecast.length, Hour[].class);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
 
-            HourListAdapter adapter = new HourListAdapter(mActivity, mHours);
-            mListView.setEmptyView(mEmptyTextView);
-            mListView.setAdapter(adapter);
-            mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    Hour h = mHours[position];
-                    String time = h.getHour();
-                    String temperature = h.getTemperature()+"";
-                    String summary = h.getSummary();
-                    String message = String.format("At %s it will be %s and %s",time,temperature,summary);
-                    Toast.makeText(mActivity, message, Toast.LENGTH_LONG).show();
-                    //play animations
-                    YoYo.with(Techniques.Shake).duration(200).playOn(view);
-                }
-            });
-        }
+        Log.d(TAG, "OnDestroyView - Hourly Fragment called");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Log.d(TAG, "OnDestroy - Hourly Fragment called");
+    }
+
+    public void setUpHourlyFragment() {
+        //set to null to reset the old one and set a new adapter bellow...
+        mListView.setAdapter(null);
+        Hour[] hourlyForecast = mActivity.mForecast.getHourlyForecast();
+        mHours = Arrays.copyOf(hourlyForecast, hourlyForecast.length, Hour[].class);
+
+        HourListAdapter adapter = new HourListAdapter(mActivity, mHours);
+        mListView.setEmptyView(mEmptyTextView);
+        mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Hour h = mHours[position];
+                String time = h.getHour();
+                String temperature = h.getTemperature() + "";
+                String summary = h.getSummary();
+                String message = String.format("At %s it will be %s and %s", time, temperature, summary);
+                Toast.makeText(mActivity, message, Toast.LENGTH_LONG).show();
+                //play animations
+                YoYo.with(Techniques.Shake).duration(200).playOn(view);
+            }
+        });
+
     }
 }
 

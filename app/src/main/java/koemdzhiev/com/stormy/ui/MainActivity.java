@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
     Current_forecast_fragment mCurrent_forecast_fragment;
     Hourly_forecast_fragment mHourly_forecast_fragment;
     Daily_forecast_fragment mDaily_forecast_fragment;
+    String mCurrentTag;
+    String mHourlyTag;
+    String mDailyTag;
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public Forecast mForecast;
@@ -132,8 +135,13 @@ public class MainActivity extends AppCompatActivity {
         mainActivityLayout = (LinearLayout)findViewById(R.id.main_activity_layout);
         changeWindowTopColor();
         this.mCurrent_forecast_fragment = new Current_forecast_fragment();
+        this.mCurrentTag = mCurrent_forecast_fragment.getTag();
+
         this.mHourly_forecast_fragment = new Hourly_forecast_fragment();
+        this.mHourlyTag = mHourly_forecast_fragment.getTag();
+
         this.mDaily_forecast_fragment = new Daily_forecast_fragment();
+        this.mDailyTag = mDaily_forecast_fragment.getTag();
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter = new ViewPagerAdapter(getSupportFragmentManager(), Titles, Numboftabs, mCurrent_forecast_fragment,
@@ -231,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     Log.d(TAG, "isSuccessful - run on UNI threth (update display)...");
-                                  mCurrent_forecast_fragment.updateDisplay();
+                                    mCurrent_forecast_fragment.updateDisplay();
                                     mHourly_forecast_fragment.setUpHourlyFragment();
                                     mDaily_forecast_fragment.setUpDailyFragment();
                                     toggleSwipeRefreshLayoutsOff();

@@ -18,12 +18,14 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
 import koemdzhiev.com.stormy.R;
+import koemdzhiev.com.stormy.adapters.ViewPagerAdapter;
 import koemdzhiev.com.stormy.weather.Current;
 
 /**
  * Created by koemdzhiev on 14/12/15.
  */
 public class Current_forecast_fragment extends Fragment {
+    private static final String TAG = "MainActivity";
     private MainActivity mActivity;
     TextView mTimeLabel;
     TextView mTemperatureLabel;
@@ -45,20 +47,35 @@ public class Current_forecast_fragment extends Fragment {
 //        Log.d(mActivity.getClass().getSimpleName(),"OnCreateFragment");
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "OnResume - Current Fragment called");
+        mActivity = ((MainActivity) getActivity());
+        if (!mActivity.mCurrent_forecast_fragment.isAdded()) {
+            mActivity.adapter = new ViewPagerAdapter(mActivity.getSupportFragmentManager(), mActivity.Titles, mActivity.Numboftabs, mActivity.mCurrent_forecast_fragment,
+                    mActivity.mHourly_forecast_fragment, mActivity.mDaily_forecast_fragment);
+            mActivity.pager.setOffscreenPageLimit(3);
+            mActivity.pager.setAdapter(mActivity.adapter);
+            Log.d(TAG, "OnResume - Current Fragment reattached");
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.current_forefast_fragment, container, false);
-        mTimeLabel = (TextView)v.findViewById(R.id.timeLabel);
-        mTemperatureLabel = (TextView)v.findViewById(R.id.temperatureLabel);
-        mHumidityValue = (TextView)v.findViewById(R.id.humidityValue);
-        mPrecipValue = (TextView)v.findViewById(R.id.precipValue);
-        mSummaryLabel = (TextView)v.findViewById(R.id.summaryLabel);
-        mLocationLabel = (TextView)v.findViewById(R.id.locationLabel);
-        mWindSpeedValue = (TextView)v.findViewById(R.id.windSpeedValue);
-        mFeelsLike = (TextView)v.findViewById(R.id.feels_like_label);
-        mIconImageView = (ImageView)v.findViewById(R.id.iconImageView);
-        mDegreeImageView = (ImageView)v.findViewById(R.id.degreeImageView);
-        mSwipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.current_swipe_refresh_layout);
+        mTimeLabel = (TextView) v.findViewById(R.id.timeLabel);
+        mTemperatureLabel = (TextView) v.findViewById(R.id.temperatureLabel);
+        mHumidityValue = (TextView) v.findViewById(R.id.humidityValue);
+        mPrecipValue = (TextView) v.findViewById(R.id.precipValue);
+        mSummaryLabel = (TextView) v.findViewById(R.id.summaryLabel);
+        mLocationLabel = (TextView) v.findViewById(R.id.locationLabel);
+        mWindSpeedValue = (TextView) v.findViewById(R.id.windSpeedValue);
+        mFeelsLike = (TextView) v.findViewById(R.id.feels_like_label);
+        mIconImageView = (ImageView) v.findViewById(R.id.iconImageView);
+        mDegreeImageView = (ImageView) v.findViewById(R.id.degreeImageView);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.current_swipe_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange, R.color.blue, R.color.green);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -73,10 +90,10 @@ public class Current_forecast_fragment extends Fragment {
                             } else {
                                 mActivity.getLocation();
                             }
-                        }else{
+                        } else {
                             mActivity.alertForNoLocationEnabled();
                         }
-                    }else{
+                    } else {
                         mSwipeRefreshLayout.setRefreshing(false);
                         Toast.makeText(mActivity, "currently refreshing...", Toast.LENGTH_SHORT).show();
                     }
@@ -87,18 +104,17 @@ public class Current_forecast_fragment extends Fragment {
             }
         });
         //Start the swipe refresh layout on start up is internet available
-        if(mActivity.isNetworkAvailable())
+        if (mActivity.isNetworkAvailable())
             mSwipeRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
                     mSwipeRefreshLayout.setRefreshing(true);
-                    Log.d("TAG","running swiping...");
-            }
-        });
+                    Log.d("TAG", "running swiping...");
+                }
+            });
 
         return v;
     }
-
 
 
     public void updateDisplay() {
@@ -110,7 +126,7 @@ public class Current_forecast_fragment extends Fragment {
         mPrecipValue.setText(current.getPrecipChange() + "%");
         mSummaryLabel.setText(current.getSummery());
         mWindSpeedValue.setText(current.getWindSpeed() + "");
-        mFeelsLike.setText("Feels like: "+current.getFeelsLike());
+        mFeelsLike.setText("Feels like: " + current.getFeelsLike());
         mLocationLabel.setText(mActivity.locationName);
         Drawable drawable = ContextCompat.getDrawable(mActivity, current.getIconId());
         mIconImageView.setImageDrawable(drawable);
@@ -125,8 +141,11 @@ public class Current_forecast_fragment extends Fragment {
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mFeelsLike);
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mPrecipValue);
         YoYo.with(Techniques.FadeIn).duration(200).playOn(mTimeLabel);
-
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+    }
 }
 

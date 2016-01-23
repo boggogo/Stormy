@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,13 +37,15 @@ public class Daily_forecast_fragment extends Fragment {
     TextView mDeveloperEmail;
     TextView mAppVersion;
     private MainActivity mActivity;
+    private static final String TAG = "MainActivity";
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v =inflater.inflate(R.layout.daily_forecast_fragment,container,false);
-        mListView = (ListView)v.findViewById(android.R.id.list);
-        mEmptyTextView = (TextView)v.findViewById(android.R.id.empty);
-        mAppVersion = (TextView)v.findViewById(R.id.appVersion);
-        mSwipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.daily_swipe_refresh_layout);
+        View v = inflater.inflate(R.layout.daily_forecast_fragment, container, false);
+        mListView = (ListView) v.findViewById(android.R.id.list);
+        mEmptyTextView = (TextView) v.findViewById(android.R.id.empty);
+        mAppVersion = (TextView) v.findViewById(R.id.appVersion);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.daily_swipe_refresh_layout);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green, R.color.blue, R.color.orange);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -56,10 +59,10 @@ public class Daily_forecast_fragment extends Fragment {
                             } else {
                                 mActivity.getLocation();
                             }
-                        }else{
+                        } else {
                             mActivity.alertForNoLocationEnabled();
                         }
-                    }else{
+                    } else {
                         mSwipeRefreshLayout.setRefreshing(false);
                         Toast.makeText(mActivity, "currently refreshing...", Toast.LENGTH_SHORT).show();
                     }
@@ -76,7 +79,7 @@ public class Daily_forecast_fragment extends Fragment {
             e.printStackTrace();
         }
         final String version = pInfo.versionName;
-        mDeveloperEmail = (TextView)v.findViewById(R.id.developer_email);
+        mDeveloperEmail = (TextView) v.findViewById(R.id.developer_email);
         mDeveloperEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,7 +101,7 @@ public class Daily_forecast_fragment extends Fragment {
             @Override
             public boolean onLongClick(View view) {
                 mActivity.numOfBackgroundUpdates = 0;
-                Toast.makeText(mActivity,"numberOfUpdates reseted to 0",Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity, "numberOfUpdates reseted to 0", Toast.LENGTH_LONG).show();
                 return true;
             }
         });
@@ -109,16 +112,24 @@ public class Daily_forecast_fragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.mActivity = ((MainActivity)getActivity());
+        this.mActivity = ((MainActivity) getActivity());
     }
 
-    public void setUpDailyFragment(){
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "OnResume - Daily Fragment called");
+        mActivity = ((MainActivity) getActivity());
+    }
+
+
+    public void setUpDailyFragment() {
 //set to null to reset the old one and set a new adapter bellow...
         mListView.setAdapter(null);
         Day[] myDayArr = mActivity.mForecast.getDailyForecast();
         mDays = Arrays.copyOf(myDayArr, myDayArr.length, Day[].class);
 
-        DayAdapter adapter = new DayAdapter(mActivity,mDays);
+        DayAdapter adapter = new DayAdapter(mActivity, mDays);
         mListView.setAdapter(adapter);
         mListView.setEmptyView(mEmptyTextView);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
