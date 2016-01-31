@@ -399,31 +399,30 @@ public class MainActivity extends AppCompatActivity {
             if( !isLocationServicesEnabled()) {
                 alertForNoLocationEnabled();
             }else {
-                  LocationRequest oneTimeOnStartRequest = LocationRequest.create()
+                LocationRequest oneTimeOnStartRequest = LocationRequest.create()
                         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                         .setNumUpdates(1)
                         .setInterval(0);
-                 onlyFirstTimeSubscription = locationProvider.getUpdatedLocation(oneTimeOnStartRequest)
-                .subscribe(new Action1<Location>() {
-                    @Override
-                    public void call(Location location) {
-                        Log.d(TAG, "Getting first location updates...");
-                        MainActivity.this.latitude = location.getLatitude();
-                        MainActivity.this.longitude = location.getLongitude();
+                onlyFirstTimeSubscription = locationProvider.getUpdatedLocation(oneTimeOnStartRequest)
+                        .subscribe(new Action1<Location>() {
+                            @Override
+                            public void call(Location location) {
+                                Log.d(TAG, "Getting first location updates...");
+                                MainActivity.this.latitude = location.getLatitude();
+                                MainActivity.this.longitude = location.getLongitude();
 
-                        reverseGeocodeObservable = locationProvider
-                                .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
-                        getLocationName();
-                        //check, only on create get location calls getForecast...
-                        if (isFirstTimeLaunchingTheApp) {
-                            getForecast(latitude, longitude);
-                        }
+                                reverseGeocodeObservable = locationProvider
+                                        .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
+                                getLocationName();
+                                //check, only on create get location calls getForecast...
+                                if (isFirstTimeLaunchingTheApp) {
+                                    getForecast(latitude, longitude);
+                                }
 
-                        onlyFirstTimeSubscription.unsubscribe();
+                                onlyFirstTimeSubscription.unsubscribe();
 
-                    }
-                });
-
+                            }
+                        });
             }
 
         } else {

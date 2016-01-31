@@ -7,9 +7,9 @@ android {
     defaultConfig {
         applicationId "koemdzhiev.com.stormy"
         minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 33
-        versionName "2.2"
+        targetSdkVersion 22
+        versionCode 34
+        versionName "2.3"
 
     }
     buildTypes {
