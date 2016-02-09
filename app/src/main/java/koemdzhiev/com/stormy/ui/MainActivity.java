@@ -1,9 +1,11 @@
 package koemdzhiev.com.stormy.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
 import android.location.LocationManager;
@@ -12,14 +14,18 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.LocationRequest;
 import com.squareup.okhttp.Call;
@@ -100,37 +106,7 @@ public class MainActivity extends AppCompatActivity {
             dialogCreator.show();
         }
 
-        request = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(900)
-                .setFastestInterval(1 * 60 * 1000)
-                .setInterval(60 * 60 * 1000);
         locationProvider = new ReactiveLocationProvider(this);
-        //subscribe for background location updates...
-        subscription = locationProvider.getUpdatedLocation(request)
-                .subscribe(new Subscriber<Location>() {
-                    @Override
-                    public void onNext(Location location) { /*Handle the location updates*/
-                        Log.d(TAG, "Getting Background updates...");
-                        MainActivity.this.latitude = location.getLatitude();
-                        MainActivity.this.longitude = location.getLongitude();
-                        numOfBackgroundUpdates++;
-
-                        reverseGeocodeObservable = locationProvider
-                                .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
-                        getLocationName();
-
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d(TAG,"OnError Background updates");
-                    }
-                });
 
         mainActivityLayout = (LinearLayout)findViewById(R.id.main_activity_layout);
         changeWindowTopColor();
@@ -177,7 +153,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.d(TAG, "OnDestroy Called!");
-        subscription.unsubscribe();
+        if(subscription != null) {
+            subscription.unsubscribe();
+        }
         //cancel any left tasks to be done now...
         super.onDestroy();
     }
@@ -399,35 +377,155 @@ public class MainActivity extends AppCompatActivity {
             if( !isLocationServicesEnabled()) {
                 alertForNoLocationEnabled();
             }else {
-                LocationRequest oneTimeOnStartRequest = LocationRequest.create()
-                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                        .setNumUpdates(1)
-                        .setInterval(0);
-                onlyFirstTimeSubscription = locationProvider.getUpdatedLocation(oneTimeOnStartRequest)
-                        .subscribe(new Action1<Location>() {
-                            @Override
-                            public void call(Location location) {
-                                Log.d(TAG, "Getting first location updates...");
-                                MainActivity.this.latitude = location.getLatitude();
-                                MainActivity.this.longitude = location.getLongitude();
-
-                                reverseGeocodeObservable = locationProvider
-                                        .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
-                                getLocationName();
-                                //check, only on create get location calls getForecast...
-                                if (isFirstTimeLaunchingTheApp) {
-                                    getForecast(latitude, longitude);
-                                }
-
-                                onlyFirstTimeSubscription.unsubscribe();
-
-                            }
-                        });
+                requestLocationPermission();
             }
 
         } else {
             alertForNoInternet();
             Log.d(TAG, "Alert No Internet" + 366);
+        }
+    }
+
+    public void requestLocationPermission(){
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle(getString(R.string.alert_title_no_location_permission))
+                        .setMessage(getString(R.string.alert_message_no_location_permission))
+                        .setPositiveButton(getString(R.string.alert_possitive_button_no_location_permission), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                            }
+                        }).setNeutralButton(getString(R.string.alert_negative_button_no_location_permission), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                showSnackbarForLocationPermission();
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }else{
+//            PERMISSION IS PREVIOUSLY GRANDED
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 0: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    startLocationUpdates();
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    showSnackbarForLocationPermission();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    private void showSnackbarForLocationPermission() {
+        mCurrent_forecast_fragment.mSwipeRefreshLayout.setRefreshing(false);
+        mCurrent_forecast_fragment.mLocationLabel.setText("Location request denied!");
+        final RelativeLayout rootView = (RelativeLayout) findViewById(R.id.fragmentRoot);
+        Snackbar.make(rootView, "Allow location permission", Snackbar.LENGTH_INDEFINITE).setAction("Allow", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCurrent_forecast_fragment.mSwipeRefreshLayout.setRefreshing(true);
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+            }
+        }).show();
+    }
+
+    private void startLocationUpdates() {
+        LocationRequest oneTimeOnStartRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setNumUpdates(1)
+                .setInterval(0);
+        onlyFirstTimeSubscription = locationProvider.getUpdatedLocation(oneTimeOnStartRequest)
+                .subscribe(new Action1<Location>() {
+                    @Override
+                    public void call(Location location) {
+                        Log.d(TAG, "Getting first location updates...");
+                        MainActivity.this.latitude = location.getLatitude();
+                        MainActivity.this.longitude = location.getLongitude();
+
+                        reverseGeocodeObservable = locationProvider
+                                .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
+                        getLocationName();
+                        //check, only on create get location calls getForecast...
+                        if (isFirstTimeLaunchingTheApp) {
+                            getForecast(latitude, longitude);
+                        }
+
+                        onlyFirstTimeSubscription.unsubscribe();
+
+                    }
+                });
+        //start background updates
+        if(request == null){
+            request = LocationRequest.create()
+                    .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                    .setSmallestDisplacement(900)
+                    .setFastestInterval(1 * 60 * 1000)
+                    .setInterval(60 * 60 * 1000);
+            //subscribe for background location updates...
+            subscription = locationProvider.getUpdatedLocation(request)
+                    .subscribe(new Subscriber<Location>() {
+                        @Override
+                        public void onNext(Location location) { /*Handle the location updates*/
+                            Log.d(TAG, "Getting Background updates...");
+                            MainActivity.this.latitude = location.getLatitude();
+                            MainActivity.this.longitude = location.getLongitude();
+                            numOfBackgroundUpdates++;
+
+                            reverseGeocodeObservable = locationProvider
+                                    .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
+                            getLocationName();
+
+                        }
+
+                        @Override
+                        public void onCompleted() {
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d(TAG, "OnError Background updates");
+                        }
+                    });
         }
     }
 
@@ -497,6 +595,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG,"OnError Geocode");
+                        locationName = sharedPref.getString(getString(R.string.location_name_on_error),"unknown");
                     }
 
                     @Override
@@ -513,6 +612,8 @@ public class MainActivity extends AppCompatActivity {
                                 cityName = address.getSubAdminArea();
                             }
                             String countryName = address.getCountryName();
+                            editor.putString(getString(R.string.location_name_on_error),cityName + ", " + countryName);
+                            editor.apply();
                             locationName = getString(R.string.location_name, cityName, countryName);
                         }
                     }

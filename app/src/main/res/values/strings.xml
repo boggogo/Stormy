@@ -31,4 +31,9 @@
     <string name="daily_today_text">Today</string>
     <string name="permission_camera_rationale">The app cannot work without location access!.</string>
     <string name="ok">OK</string>
+    <string name="alert_message_no_location_permission">This application relies heavily on the location of the device in order to provide weather forecast data. Without the location permission the app cannot work.</string>
+    <string name="alert_title_no_location_permission">Location Permission Needed</string>
+    <string name="alert_possitive_button_no_location_permission">Allow</string>
+    <string name="alert_negative_button_no_location_permission">Deny</string>
+    <string name="location_name_on_error">lastLocationName</string>
 </resources>
