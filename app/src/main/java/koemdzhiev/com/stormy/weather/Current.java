@@ -2,6 +2,7 @@ package koemdzhiev.com.stormy.weather;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -60,7 +61,7 @@ public class Current {
     }
 
     public String getFormattedTime(){
-        SimpleDateFormat formatter = new SimpleDateFormat("h:mm a");
+        SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", Locale.UK);
         formatter.setTimeZone(TimeZone.getTimeZone(getTimeZone()));
         Date dateTime = new Date(getTime() * 1000);
         String timeString = formatter.format(dateTime);

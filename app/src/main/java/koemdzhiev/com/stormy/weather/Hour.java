@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by koemdzhiev on 17/05/2015.
@@ -64,7 +65,7 @@ public class Hour implements Parcelable{
     }
 
     public String getHour(){
-        SimpleDateFormat formatter = new SimpleDateFormat("h a");
+        SimpleDateFormat formatter = new SimpleDateFormat("h a", Locale.UK);
         Date date = new Date(mTime * 1000);
         return formatter.format(date);
     }
