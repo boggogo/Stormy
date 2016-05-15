@@ -8,8 +8,8 @@ android {
         applicationId "koemdzhiev.com.stormy"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 36
-        versionName "2.5"
+        versionCode 37
+        versionName "2.6"
 
     }
     buildTypes {
