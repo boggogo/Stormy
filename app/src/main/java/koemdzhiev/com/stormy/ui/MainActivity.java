@@ -40,6 +40,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -482,7 +483,7 @@ public class MainActivity extends AppCompatActivity {
                         MainActivity.this.longitude = location.getLongitude();
 
                         reverseGeocodeObservable = locationProvider
-                                .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
+                                .getReverseGeocodeObservable(Locale.ENGLISH, location.getLatitude(), location.getLongitude(), 1);
                         getLocationName();
                         //check, only on create get location calls getForecast...
                         if (isFirstTimeLaunchingTheApp) {
@@ -511,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
                             numOfBackgroundUpdates++;
 
                             reverseGeocodeObservable = locationProvider
-                                    .getReverseGeocodeObservable(location.getLatitude(), location.getLongitude(), 1);
+                                    .getReverseGeocodeObservable(Locale.ENGLISH, location.getLatitude(), location.getLongitude(), 1);
                             getLocationName();
 
                         }
