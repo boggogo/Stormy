@@ -60,6 +60,12 @@ import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = MainActivity.class.getSimpleName();
+    public Forecast mForecast;
+    //initiate coordinates to 0.0
+    public double latitude = 0.0;
+    public double longitude = 0.0;
+    public boolean isFirstTimeLaunchingTheApp = true;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
@@ -71,18 +77,9 @@ public class MainActivity extends AppCompatActivity {
     String mCurrentTag;
     String mHourlyTag;
     String mDailyTag;
-
-    public static final String TAG = MainActivity.class.getSimpleName();
-    public Forecast mForecast;
-    //initiate coordinates to 0.0
-    public double latitude = 0.0;
-    public double longitude = 0.0;
-    private LocationManager locationManager;
-    public boolean isFirstTimeLaunchingTheApp = true;
     LinearLayout mainActivityLayout;
     LocationRequest request;
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
-    private ScheduledFuture<?> mScheduledFuture;
     ReactiveLocationProvider locationProvider;
     Observable<List<Address>> reverseGeocodeObservable;
     Subscription subscription;
@@ -92,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
     String locationName = "";
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
+    private LocationManager locationManager;
+    private ScheduledFuture<?> mScheduledFuture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -584,7 +583,7 @@ public class MainActivity extends AppCompatActivity {
     //external my method...
     public void getLocationName(){
         reverseGeocodeObservable
-                .subscribeOn(Schedulers.io())               // use I/O thread to query for addresses
+                .subscribeOn(Schedulers.io())// use I/O thread to query for addresses
                 .observeOn(AndroidSchedulers.mainThread())// return result in main android thread to manipulate UI
                 .subscribe(new Subscriber<List<Address>>() {
                     @Override
@@ -628,6 +627,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void alertForServerError() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.server_error_title);
+        builder.setMessage(R.string.no_response_from_server_message);
+        builder.setPositiveButton("OK", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     class NotAbleToGetWeatherDataTask implements Runnable {
 
         @Override
@@ -635,15 +643,6 @@ public class MainActivity extends AppCompatActivity {
             alertForServerError();
             toggleSwipeRefreshLayoutsOff();
         }
-    }
-
-    private void alertForServerError(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(R.string.server_error_title);
-        builder.setMessage(R.string.no_response_from_server_message);
-        builder.setPositiveButton("OK", null);
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
 }
