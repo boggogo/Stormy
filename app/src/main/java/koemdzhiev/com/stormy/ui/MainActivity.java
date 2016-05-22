@@ -47,6 +47,8 @@ import java.util.concurrent.TimeUnit;
 
 import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.adapters.ViewPagerAdapter;
+import koemdzhiev.com.stormy.ui.dialogs.AlertDIalogFragment;
+import koemdzhiev.com.stormy.ui.dialogs.WIFIDialogFragment;
 import koemdzhiev.com.stormy.weather.Current;
 import koemdzhiev.com.stormy.weather.Day;
 import koemdzhiev.com.stormy.weather.Forecast;
@@ -645,5 +647,6 @@ public class MainActivity extends AppCompatActivity {
             toggleSwipeRefreshLayoutsOff();
         }
     }
+
 
 }

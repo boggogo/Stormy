@@ -17,12 +17,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
-
 import java.util.Arrays;
 
 import koemdzhiev.com.stormy.R;
+import koemdzhiev.com.stormy.Utils.Constants;
 import koemdzhiev.com.stormy.adapters.DayAdapter;
 import koemdzhiev.com.stormy.weather.Day;
 
@@ -30,14 +28,14 @@ import koemdzhiev.com.stormy.weather.Day;
  * Created by koemdzhiev on 14/12/15.
  */
 public class Daily_forecast_fragment extends Fragment {
-    private Day[] mDays;
+    private static final String TAG = Daily_forecast_fragment.class.getSimpleName();
     public SwipeRefreshLayout mSwipeRefreshLayout;
     ListView mListView;
     TextView mEmptyTextView;
     TextView mDeveloperEmail;
     TextView mAppVersion;
+    private Day[] mDays;
     private MainActivity mActivity;
-    private static final String TAG = "MainActivity";
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -139,11 +137,26 @@ public class Daily_forecast_fragment extends Fragment {
                 String condition = mDays[position].getSummary();
                 String highTemp = mDays[position].getTemperatureMax() + "";
                 String massage = String.format("On %s the high will be %s and it will be %s", dayOfTheWeek, highTemp, condition);
-                Toast.makeText(mActivity, massage, Toast.LENGTH_LONG).show();
+
+
+                Intent goToDailyMoreInfo = new Intent(mActivity, DailyMoreInfoActivity.class);
+                goToDailyMoreInfo.putExtra(Constants.DAY_OF_WEEK, dayOfTheWeek);
+
+                // if this is the first item set it to Today
+                if (position == 0) {
+                    goToDailyMoreInfo.putExtra(Constants.DAY_OF_WEEK, "Today");
+                }
+
+                goToDailyMoreInfo.putExtra(Constants.DAY_KEY, mDays[position]);
+                startActivity(goToDailyMoreInfo);
+
+                //Toast.makeText(mActivity, massage, Toast.LENGTH_LONG).show();
                 //play animations
-                YoYo.with(Techniques.Shake).duration(200).playOn(view);
+                //YoYo.with(Techniques.Shake).duration(200).playOn(view);
 
             }
         });
     }
+
+
 }

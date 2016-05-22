@@ -2,79 +2,79 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:gravity="center"
+    android:paddingBottom="1dp"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="0dp"
-                android:paddingBottom="1dp"
-                android:gravity="center"
-                tools:context="koemdzhiev.com.stormy.ui.DailyForecastActivity"
-                android:background="@drawable/bg_gradient">
+    tools:context="koemdzhiev.com.stormy.ui.Daily_forecast_fragment">
 
     <TextView
+        android:id="@android:id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_daily_forecast_data"
-        android:id="@android:id/empty"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/no_daily_forecast_data"
         android:textColor="#ffffffff"/>
 
     <TextView
+        android:id="@+id/thisWeekLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This week&apos;s weather"
-        android:id="@+id/thisWeekLabel"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:text="This week&apos;s weather"
         android:textColor="#ffffffff"
         android:textSize="30sp"/>
 
     <TextView
+        android:id="@+id/developer_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/developer_email"
-        android:textSize="@dimen/abc_text_size_small_material"
-        android:id="@+id/developer_email"
-        android:textColor="@android:color/white"
-        android:paddingBottom="7dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="7dp"
+        android:text="@string/developer_email"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/abc_text_size_small_material" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_centerVertical="true"
-        android:gravity="center"
-        android:layout_below="@+id/thisWeekLabel"
         android:layout_above="@+id/developer_email"
-        android:layout_centerInParent="true">
+        android:layout_below="@+id/thisWeekLabel"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/daily_swipe_refresh_layout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
         <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:id="@android:id/list"
-            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:divider="@null"
             android:dividerHeight="0dp"/>
         </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 
     <TextView
+        android:id="@+id/appVersion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="v 2.0"
-        android:id="@+id/appVersion"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        android:text="v 2.0"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

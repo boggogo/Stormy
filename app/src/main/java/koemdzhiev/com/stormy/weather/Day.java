@@ -12,17 +12,37 @@ import java.util.TimeZone;
  * Created by koemdzhiev on 17/05/2015.
  */
 public class Day implements Parcelable {
-    //default constructor
-    public Day(){
+    public static final Creator<Day> CREATOR = new Creator<Day>() {
+        @Override
+        public Day createFromParcel(Parcel source) {
+            return new Day(source);
+        }
 
+        @Override
+        public Day[] newArray(int size) {
+            return new Day[size];
+        }
     };
-
+    ;
     private long mTime;
     private String mSummary;
     private double mTemperatureMax;
     private String mIcon;
     private String mTimezone;
-    private int mDayOfTheWeek;
+
+
+    //default constructor
+    public Day() {
+
+    }
+
+    private Day(Parcel in) {
+        mTime = in.readLong();
+        mSummary = in.readString();
+        mTemperatureMax = in.readDouble();
+        mIcon = in.readString();
+        mTimezone = in.readString();
+    }
 
     public long getTime() {
         return mTime;
@@ -41,7 +61,7 @@ public class Day implements Parcelable {
     }
 
     public int getTemperatureMax() {
-        
+
         return Math.round(((int) mTemperatureMax));
     }
 
@@ -64,7 +84,7 @@ public class Day implements Parcelable {
     public void setTimezone(String timezone) {
         mTimezone = timezone;
     }
-    
+
     public int getIconId(){
         return Forecast.getIconId(mIcon);
     }
@@ -76,11 +96,11 @@ public class Day implements Parcelable {
         return formatter.format(dateTime);
     }
 
-
     @Override
     public int describeContents() {
         return 0;
     }
+
     //wraps the data to be parsed
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -90,24 +110,4 @@ public class Day implements Parcelable {
         dest.writeString(mIcon);
         dest.writeString(mTimezone);
     }
-
-    private Day (Parcel in){
-        mTime = in.readLong();
-        mSummary = in.readString();
-        mTemperatureMax = in.readDouble();
-        mIcon = in.readString();
-        mTimezone = in.readString();
-    }
-
-    public static final  Creator<Day> CREATOR = new Creator<Day>() {
-        @Override
-        public Day createFromParcel(Parcel source) {
-            return new Day(source);
-        }
-
-        @Override
-        public Day[] newArray(int size) {
-            return new Day[size];
-        }
-    };
 }
