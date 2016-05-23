@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +16,11 @@ public class DailyMoreInfoActivity extends AppCompatActivity {
     private Day chosenDay;
     private ImageView mWeatherIcon;
     private TextView mSummaryTextView;
+    private TextView mSunrise;
+    private TextView mSunset;
+    private TextView mWindSpeed;
+    private TextView mPressure;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,10 @@ public class DailyMoreInfoActivity extends AppCompatActivity {
 
         mWeatherIcon = (ImageView) findViewById(R.id.weatherIcon);
         mSummaryTextView = (TextView) findViewById(R.id.summaryTextView);
+        mSunrise = (TextView) findViewById(R.id.sunrise_time);
+        mSunset = (TextView) findViewById(R.id.sunset_time);
+        mWindSpeed = (TextView) findViewById(R.id.wind_speed);
+        mPressure = (TextView) findViewById(R.id.pressure);
 
         Intent intent = getIntent();
         String dayOfTheWeek = intent.getStringExtra(Constants.DAY_OF_WEEK);
@@ -39,16 +47,21 @@ public class DailyMoreInfoActivity extends AppCompatActivity {
 
         mWeatherIcon.setImageResource(chosenDay.getIconId());
         mSummaryTextView.setText(chosenDay.getSummary());
+        mSunrise.setText(chosenDay.getFormattedSunRiseTime() + "");
+        mSunset.setText(chosenDay.getFormattedSunSetTime() + "");
+        mWindSpeed.setText(chosenDay.getWindSpeed() + "m/s");
+        mPressure.setText(chosenDay.getPressure() + " millibars");
 
-        Log.d(TAG, "Summary: " + chosenDay.getSummary());
-        Log.d(TAG, "Time: " + chosenDay.getTime());
-        Log.d(TAG, "TimeZone: " + chosenDay.getTimezone());
-        Log.d(TAG, "TempMax: " + chosenDay.getTemperatureMax());
-        Log.d(TAG, "IconID: " + chosenDay.getIconId());
-        Log.d(TAG, "Sunrise time: " + chosenDay.getFormattedSunRiseTime());
-        Log.d(TAG, "Sunset time: " + chosenDay.getFormattedSunSetTime());
-        Log.d(TAG, "Wind Speed: " + chosenDay.getWindSpeed() + " Meters per second");
-        Log.d(TAG, "Pressure: " + chosenDay.getPressure() + " millibars");
+//        Log.d(TAG, "Summary: " + chosenDay.getSummary());
+//        Log.d(TAG, "Time: " + chosenDay.getTime());
+//        Log.d(TAG, "TimeZone: " + chosenDay.getTimezone());
+//        Log.d(TAG, "TempMax: " + chosenDay.getTemperatureMax());
+//        Log.d(TAG, "IconID: " + chosenDay.getIconId());
+//
+//        Log.d(TAG, "Sunrise time: " + chosenDay.getFormattedSunRiseTime());
+//        Log.d(TAG, "Sunset time: " + chosenDay.getFormattedSunSetTime());
+//        Log.d(TAG, "Wind Speed: " + chosenDay.getWindSpeed() + " m/s");
+//        Log.d(TAG, "Pressure: " + chosenDay.getPressure() + " millibars");
 
     }
 
