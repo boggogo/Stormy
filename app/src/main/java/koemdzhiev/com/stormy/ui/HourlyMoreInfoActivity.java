@@ -74,4 +74,5 @@ public class HourlyMoreInfoActivity extends AppCompatActivity {
 
     }
 
+
 }
