@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.Utils.Constants;
 import koemdzhiev.com.stormy.weather.Day;
@@ -48,10 +51,18 @@ public class DailyMoreInfoActivity extends AppCompatActivity {
         mScrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                finish();
+                Intent i = new Intent(DailyMoreInfoActivity.this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(i);
                 return true;
             }
         });
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+
         Intent intent = getIntent();
         String dayOfTheWeek = intent.getStringExtra(Constants.DAY_OF_WEEK);
         Bundle extras = intent.getExtras();

@@ -38,4 +38,6 @@
     <string name="location_name_on_error" translatable="false">lastLocationName</string>
     <string name="title_activity_daily_more_info">DailyMoreInfoActivity</string>
     <string name="title_activity_hourly_more_info">HourlyMoreInfoActivity</string>
+
+    <string name="banner_ad_unit_id">ca-app-pub-1798838525129690/3848104164</string>
 </resources>

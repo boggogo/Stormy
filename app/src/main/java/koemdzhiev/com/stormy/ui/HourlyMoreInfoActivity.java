@@ -12,6 +12,9 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import koemdzhiev.com.stormy.R;
 import koemdzhiev.com.stormy.Utils.Constants;
 import koemdzhiev.com.stormy.weather.Hour;
@@ -44,11 +47,16 @@ public class HourlyMoreInfoActivity extends AppCompatActivity {
         mScrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG,"RELATIVE TOUCH!");
-                finish();
+                Intent i = new Intent(HourlyMoreInfoActivity.this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(i);
                 return true;
             }
         });
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
 
         Intent intent = getIntent();
