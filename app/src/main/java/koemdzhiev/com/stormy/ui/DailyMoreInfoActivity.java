@@ -42,8 +42,13 @@ public class DailyMoreInfoActivity extends AppCompatActivity {
 
         Log.d(TAG, "Summary: " + chosenDay.getSummary());
         Log.d(TAG, "Time: " + chosenDay.getTime());
+        Log.d(TAG, "TimeZone: " + chosenDay.getTimezone());
         Log.d(TAG, "TempMax: " + chosenDay.getTemperatureMax());
         Log.d(TAG, "IconID: " + chosenDay.getIconId());
+        Log.d(TAG, "Sunrise time: " + chosenDay.getFormattedSunRiseTime());
+        Log.d(TAG, "Sunset time: " + chosenDay.getFormattedSunSetTime());
+        Log.d(TAG, "Wind Speed: " + chosenDay.getWindSpeed() + " Meters per second");
+        Log.d(TAG, "Pressure: " + chosenDay.getPressure() + " millibars");
 
     }
 

@@ -26,7 +26,9 @@
             android:name=".ui.DailyMoreInfoActivity"
             android:label="@string/title_activity_daily_more_info"
             android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"></activity>
+
     </application>
 
 </manifest>

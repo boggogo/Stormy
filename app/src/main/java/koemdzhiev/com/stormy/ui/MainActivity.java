@@ -291,6 +291,10 @@ public class MainActivity extends AppCompatActivity {
             day.setTemperatureMax(jsonDay.getDouble("temperatureMax"));
             day.setTime(jsonDay.getLong("time"));
             day.setTimezone(timezone);
+            day.setSunriseTime(jsonDay.getLong("sunriseTime"));
+            day.setSunsetTime(jsonDay.getLong("sunsetTime"));
+            day.setWindSpeed(jsonDay.getDouble("windSpeed"));
+            day.setPressure(jsonDay.getDouble("pressure"));
 
             days[i] = day;
 
