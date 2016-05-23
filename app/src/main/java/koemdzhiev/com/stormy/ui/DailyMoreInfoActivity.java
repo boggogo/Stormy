@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import koemdzhiev.com.stormy.R;
@@ -20,6 +23,8 @@ public class DailyMoreInfoActivity extends AppCompatActivity {
     private TextView mSunset;
     private TextView mWindSpeed;
     private TextView mPressure;
+    private TextView mTemperature;
+    private ScrollView mScrollView;
 
 
     @Override
@@ -38,7 +43,15 @@ public class DailyMoreInfoActivity extends AppCompatActivity {
         mSunset = (TextView) findViewById(R.id.sunset_time);
         mWindSpeed = (TextView) findViewById(R.id.wind_speed);
         mPressure = (TextView) findViewById(R.id.pressure);
-
+        mTemperature = (TextView) findViewById(R.id.temperature);
+        mScrollView = (ScrollView)findViewById(R.id.dailyScrollView);
+        mScrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                finish();
+                return true;
+            }
+        });
         Intent intent = getIntent();
         String dayOfTheWeek = intent.getStringExtra(Constants.DAY_OF_WEEK);
         Bundle extras = intent.getExtras();
@@ -49,8 +62,9 @@ public class DailyMoreInfoActivity extends AppCompatActivity {
         mSummaryTextView.setText(chosenDay.getSummary());
         mSunrise.setText(chosenDay.getFormattedSunRiseTime() + "");
         mSunset.setText(chosenDay.getFormattedSunSetTime() + "");
-        mWindSpeed.setText(chosenDay.getWindSpeed() + "m/s");
+        mWindSpeed.setText(chosenDay.getWindSpeed() + " m/s");
         mPressure.setText(chosenDay.getPressure() + " millibars");
+        mTemperature.setText(chosenDay.getTemperatureMax() + " C");
 
 //        Log.d(TAG, "Summary: " + chosenDay.getSummary());
 //        Log.d(TAG, "Time: " + chosenDay.getTime());

@@ -37,4 +37,5 @@
     <string name="alert_negative_button_no_location_permission" translatable="false">Deny</string>
     <string name="location_name_on_error" translatable="false">lastLocationName</string>
     <string name="title_activity_daily_more_info">DailyMoreInfoActivity</string>
+    <string name="title_activity_hourly_more_info">HourlyMoreInfoActivity</string>
 </resources>

@@ -16,9 +16,28 @@ public class Hour implements Parcelable{
     private double mTemperature;
     private String mIcon;
     private String mTimezone;
+    private double mWindSpeed;
+    private double mPressure;
+    private double mVisibility;
 
     public Hour(){};
 
+
+    public double getWindSpeed() {
+        return mWindSpeed;
+    }
+
+    public void setWindSpeed(double mWindSpeed) {
+        this.mWindSpeed = mWindSpeed;
+    }
+
+    public double getPressure() {
+        return mPressure;
+    }
+
+    public void setPressure(double mPressure) {
+        this.mPressure = mPressure;
+    }
 
     public long getTime() {
         return mTime;
@@ -82,6 +101,8 @@ public class Hour implements Parcelable{
         dest.writeDouble(mTemperature);
         dest.writeString(mIcon);
         dest.writeString(mTimezone);
+        dest.writeDouble(mWindSpeed);
+        dest.writeDouble(mPressure);
     }
 
     public Hour(Parcel parcel){
@@ -90,6 +111,8 @@ public class Hour implements Parcelable{
         mTemperature = parcel.readDouble();
         mIcon = parcel.readString();
         mTimezone = parcel.readString();
+        mWindSpeed = parcel.readDouble();
+        mPressure = parcel.readDouble();
     }
 
     public static final Creator<Hour> CREATOR = new Creator<Hour>() {

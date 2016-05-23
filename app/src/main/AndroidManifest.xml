@@ -27,8 +27,16 @@
             android:label="@string/title_activity_daily_more_info"
             android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
-
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.HourlyMoreInfoActivity"
+            android:label="@string/title_activity_hourly_more_info"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="koemdzhiev.com.stormy.ui.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

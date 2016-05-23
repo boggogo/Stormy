@@ -6,4 +6,5 @@ package koemdzhiev.com.stormy.Utils;
 public class Constants {
     public static final String DAY_OF_WEEK = "day of the week";
     public static final String DAY_KEY = "day key";
+    public static final String HOURLY_KEY = "hour key";
 }
