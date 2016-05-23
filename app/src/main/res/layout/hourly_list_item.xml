@@ -21,8 +21,8 @@
 
     <ImageView
         android:id="@+id/iconImageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/timeLabel"
         android:layout_toRightOf="@+id/timeLabel"
