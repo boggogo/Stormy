@@ -59,7 +59,7 @@
             android:layout_toRightOf="@+id/iconImageView"
             android:paddingLeft="10dp"
             android:textColor="#ffffffff"
-            android:textSize="20sp"
+            android:textSize="18sp"
             tools:text="Wednesday" />
     </LinearLayout>
 

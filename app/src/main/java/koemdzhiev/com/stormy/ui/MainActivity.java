@@ -28,11 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.location.LocationRequest;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +48,11 @@ import koemdzhiev.com.stormy.weather.Current;
 import koemdzhiev.com.stormy.weather.Day;
 import koemdzhiev.com.stormy.weather.Forecast;
 import koemdzhiev.com.stormy.weather.Hour;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 import rx.Observable;
 import rx.Subscriber;
@@ -62,7 +62,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Callback {
     public static final String TAG = MainActivity.class.getSimpleName();
     public Forecast mForecast;
     //initiate coordinates to 0.0
@@ -186,61 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
             Call call = client.newCall(request);
 
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            toggleSwipeRefreshLayoutsOff();
-                        }
-                    });
-                    //on response from the server cansel the noResponseFromServer task
-//on response from the server cansel the noResponseFromServer task
-                    Log.d(TAG,"OnFailure_ scheduledFuture is CANCELED");
-                    mScheduledFuture.cancel(true);
-                    alertUserAboutError();
-                }
-
-                //when the call to the Okhttp library finishes, than calls this method:
-                @Override
-                public void onResponse(Response response) throws IOException {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            toggleSwipeRefreshLayoutsOff();
-                        }
-                    });
-                    try {
-                        String jsonData = response.body().string();
-                        if (response.isSuccessful()) {
-                            mForecast = parseForecastDetails(jsonData);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.d(TAG, "isSuccessful - run on UNI threth (update display)...");
-                                    mCurrent_forecast_fragment.updateDisplay();
-                                    mHourly_forecast_fragment.setUpHourlyFragment();
-                                    mDaily_forecast_fragment.setUpDailyFragment();
-                                    toggleSwipeRefreshLayoutsOff();
-                                    //set the isFirstTime to true so that the next refresh wont get location
-                                    isFirstTimeLaunchingTheApp = false;
-
-                                }
-                            });
-
-
-                        } else {
-                            alertUserAboutError();
-                        }
-                    } catch (IOException | JSONException e) {
-                        Log.e(TAG, "Exception caught:", e);
-                    }
-                    //on response from the server cansel the noResponseFromServer task
-                    Log.d(TAG,"OnResponse_ scheduledFuture is CANCELED");
-                    mScheduledFuture.cancel(true);
-                }
-            });
+            call.enqueue(this);
         } else {
             toggleSwipeRefreshLayoutsOff();
             alertForNoInternet();
@@ -637,6 +583,59 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", null);
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    @Override
+    public void onFailure(Call call, IOException e) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                toggleSwipeRefreshLayoutsOff();
+            }
+        });
+        //on response from the server cansel the noResponseFromServer task
+//on response from the server cansel the noResponseFromServer task
+        Log.d(TAG,"OnFailure_ scheduledFuture is CANCELED");
+        mScheduledFuture.cancel(true);
+        alertUserAboutError();
+    }
+
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                toggleSwipeRefreshLayoutsOff();
+            }
+        });
+        try {
+            String jsonData = response.body().string();
+            if (response.isSuccessful()) {
+                mForecast = parseForecastDetails(jsonData);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "isSuccessful - run on UNI threth (update display)...");
+                        mCurrent_forecast_fragment.updateDisplay();
+                        mHourly_forecast_fragment.setUpHourlyFragment();
+                        mDaily_forecast_fragment.setUpDailyFragment();
+                        toggleSwipeRefreshLayoutsOff();
+                        //set the isFirstTime to true so that the next refresh wont get location
+                        isFirstTimeLaunchingTheApp = false;
+
+                    }
+                });
+
+
+            } else {
+                alertUserAboutError();
+            }
+        } catch (IOException | JSONException e) {
+            Log.e(TAG, "Exception caught:", e);
+        }
+        //on response from the server cansel the noResponseFromServer task
+        Log.d(TAG,"OnResponse_ scheduledFuture is CANCELED");
+        mScheduledFuture.cancel(true);
     }
 
     class NotAbleToGetWeatherDataTask implements Runnable {
