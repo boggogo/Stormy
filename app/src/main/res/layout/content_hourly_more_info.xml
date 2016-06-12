@@ -11,8 +11,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ui.DailyMoreInfoActivity"
-    tools:showIn="@layout/activity_daily_more_info">
+    tools:context=".ui.HourlyMoreInfoActivity"
+    tools:showIn="@layout/activity_hourly_more_info">
 
     <TextView
         android:id="@+id/summaryLabel"
@@ -24,7 +24,7 @@
         android:textColor="@android:color/holo_orange_dark" />
 
     <ScrollView
-        android:id="@+id/dailyScrollView"
+        android:id="@+id/finishThisActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/summaryLabel">
@@ -46,11 +46,10 @@
                     android:id="@+id/relativeLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_below="@+id/summaryLabel"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center">
 
                     <TextView
                         android:id="@+id/summaryTextView"
@@ -61,7 +60,7 @@
                         android:layout_toEndOf="@+id/weatherIcon"
                         android:layout_toRightOf="@+id/weatherIcon"
                         android:paddingRight="2dp"
-                        android:text="Clear throughtout the day"
+                        android:text="Mostly Cloudy"
                         android:textColor="@android:color/white"
                         android:textSize="21sp" />
 
@@ -69,9 +68,6 @@
                         android:id="@+id/weatherIcon"
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="5dp"
                         android:adjustViewBounds="true"
@@ -91,88 +87,12 @@
                 android:textColor="@android:color/holo_orange_dark" />
 
             <android.support.v7.widget.CardView
-                android:id="@+id/details_card_view"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/summery_card_view"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="30dp"
-                app:cardBackgroundColor="@color/ColorPrimary"
-                card_view:cardCornerRadius="4dp">
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center">
-
-                    <LinearLayout
-                        android:id="@+id/sun_time_container"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:gravity="left"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/sunrise_time_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginLeft="10dp"
-                            android:text="Sunrise time:"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@android:color/white" />
-
-                        <TextView
-                            android:id="@+id/sunset_time_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:text="Sunset time:"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@android:color/white" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_toRightOf="@id/sun_time_container"
-                        android:gravity="left"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/sunrise_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="10dp"
-                            android:text="4:32 a.m."
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@android:color/white" />
-
-                        <TextView
-                            android:id="@+id/sunset_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="8:45 p.m."
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@android:color/white" />
-                    </LinearLayout>
-
-                </RelativeLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
                 android:id="@+id/more_weather_details_card_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/details_card_view"
+                android:layout_below="@+id/details_label"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginTop="20dp"
                 app:cardBackgroundColor="@color/ColorPrimary"
                 card_view:cardCornerRadius="4dp">
 
@@ -214,7 +134,7 @@
                             android:id="@+id/temperatureLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Max Temp."
+                            android:text="Temperature"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:textColor="@android:color/white" />
                     </LinearLayout>

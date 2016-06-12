@@ -1,5 +1,6 @@
 package koemdzhiev.com.stormy.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,12 +14,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
-
 import java.util.Arrays;
 
 import koemdzhiev.com.stormy.R;
+import koemdzhiev.com.stormy.Utils.Constants;
 import koemdzhiev.com.stormy.adapters.HourListAdapter;
 import koemdzhiev.com.stormy.weather.Hour;
 
@@ -116,10 +115,16 @@ public class Hourly_forecast_fragment extends Fragment {
                 String time = h.getHour();
                 String temperature = h.getTemperature() + "";
                 String summary = h.getSummary();
+
+                Intent goToHourlyMoreInfo = new Intent(mActivity, HourlyMoreInfoActivity.class);
+                goToHourlyMoreInfo.putExtra(Constants.HOURLY_KEY,mHours[position]);
+
+                startActivity(goToHourlyMoreInfo);
+
                 String message = String.format("At %s it will be %s and %s", time, temperature, summary);
-                Toast.makeText(mActivity, message, Toast.LENGTH_LONG).show();
+                //Toast.makeText(mActivity, message, Toast.LENGTH_LONG).show();
                 //play animations
-                YoYo.with(Techniques.Shake).duration(200).playOn(view);
+                //YoYo.with(Techniques.Shake).duration(200).playOn(view);
             }
         });
 

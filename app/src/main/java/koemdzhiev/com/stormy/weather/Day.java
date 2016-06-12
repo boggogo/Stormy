@@ -29,6 +29,10 @@ public class Day implements Parcelable {
     private double mTemperatureMax;
     private String mIcon;
     private String mTimezone;
+    private long mSunRiseTime;
+    private long mSunsetTime;
+    private double mWindSpeed;
+    private double mPressure;
 
 
     //default constructor
@@ -42,6 +46,42 @@ public class Day implements Parcelable {
         mTemperatureMax = in.readDouble();
         mIcon = in.readString();
         mTimezone = in.readString();
+        mSunRiseTime = in.readLong();
+        mSunsetTime = in.readLong();
+        mWindSpeed = in.readDouble();
+        mPressure = in.readDouble();
+    }
+
+    public double getPressure() {
+        return mPressure;
+    }
+
+    public void setPressure(double mPressure) {
+        this.mPressure = mPressure;
+    }
+
+    public double getWindSpeed() {
+        return mWindSpeed;
+    }
+
+    public void setWindSpeed(double mWindSpeed) {
+        this.mWindSpeed = mWindSpeed;
+    }
+
+    public long getSunsetTime() {
+        return mSunsetTime;
+    }
+
+    public void setSunsetTime(long mSunsetTime) {
+        this.mSunsetTime = mSunsetTime;
+    }
+
+    public long getSunRiseTime() {
+        return mSunRiseTime;
+    }
+
+    public void setSunriseTime(long mSunRiseTime) {
+        this.mSunRiseTime = mSunRiseTime;
     }
 
     public long getTime() {
@@ -96,6 +136,25 @@ public class Day implements Parcelable {
         return formatter.format(dateTime);
     }
 
+    public String getFormattedSunRiseTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", Locale.UK);
+        formatter.setTimeZone(TimeZone.getTimeZone(getTimezone()));
+        Date dateTime = new Date(getSunRiseTime() * 1000);
+        String timeString = formatter.format(dateTime);
+
+        return timeString;
+    }
+// TODO Try to make formatter local variable
+
+    public String getFormattedSunSetTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", Locale.UK);
+        formatter.setTimeZone(TimeZone.getTimeZone(getTimezone()));
+        Date dateTime = new Date(getSunsetTime() * 1000);
+        String timeString = formatter.format(dateTime);
+
+        return timeString;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -109,5 +168,9 @@ public class Day implements Parcelable {
         dest.writeDouble(mTemperatureMax);
         dest.writeString(mIcon);
         dest.writeString(mTimezone);
+        dest.writeLong(mSunRiseTime);
+        dest.writeLong(mSunsetTime);
+        dest.writeDouble(mWindSpeed);
+        dest.writeDouble(mPressure);
     }
 }

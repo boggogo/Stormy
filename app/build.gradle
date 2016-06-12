@@ -36,4 +36,6 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.14'
     //RxAndroid or NotRxAndroid is not required by library
     compile 'io.reactivex:rxandroid:0.25.0'
+    // ads
+    compile 'com.google.android.gms:play-services-ads:9.0.0'
 }

@@ -237,6 +237,10 @@ public class MainActivity extends AppCompatActivity implements Callback {
             day.setTemperatureMax(jsonDay.getDouble("temperatureMax"));
             day.setTime(jsonDay.getLong("time"));
             day.setTimezone(timezone);
+            day.setSunriseTime(jsonDay.getLong("sunriseTime"));
+            day.setSunsetTime(jsonDay.getLong("sunsetTime"));
+            day.setWindSpeed(jsonDay.getDouble("windSpeed"));
+            day.setPressure(jsonDay.getDouble("pressure"));
 
             days[i] = day;
 
@@ -263,6 +267,10 @@ public class MainActivity extends AppCompatActivity implements Callback {
             hour.setIcon(jsonHour.getString("icon"));
             hour.setTime(jsonHour.getLong("time"));
             hour.setTimezone(timezone);
+            hour.setWindSpeed(jsonHour.getDouble("windSpeed"));
+            hour.setPressure(jsonHour.getDouble("pressure"));
+            double visib = jsonHour.getDouble("visibility");
+            Log.d(TAG,"VISIBILITY: " + visib);
 
             hours[i] = hour;
         }
